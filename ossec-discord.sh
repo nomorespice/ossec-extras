@@ -1,7 +1,7 @@
 #!/bin/bash
 # ossec-discord.sh
 #
-# URL is provided by the Discord's WebHook: https://discordapp.com/api/webhooks/TOKEN"
+# URL is provided by the Discord's WebHook: https://discordapp.com/api/webhooks/TOKEN
 #
 AWK=/usr/bin/awk
 CAT=/bin/cat
