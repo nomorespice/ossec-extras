@@ -1,5 +1,5 @@
-Table of Contents
------------------
+# Table of Contents
+
 
   * [ossec-discord.sh](#ossec-discord.sh)
   
