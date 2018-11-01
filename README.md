@@ -83,7 +83,7 @@ __Example Report__
 ```
 [root@machine ~]# /var/ossec/bin/rootcheck_control -i 100 -L
 
-Policy and auditing events for agent 'test (100) - fdfd:0:0:0::64/128':
+Policy and auditing events for agent 'test (100) - fdfd:0:0:0::1/128':
 
 Resolved events: 
 
