@@ -1,0 +1,958 @@
+# OSSEC Linux Audit - (C) 2018 OSSEC Project
+#
+# Released under the same license as OSSEC.
+# More details at the LICENSE file included with OSSEC or online
+# at: https://github.com/ossec/ossec-hids/blob/master/LICENSE
+#
+# [Application name] [any or all] [reference]
+# type:<entry name>;
+#
+# Type can be:
+#             - f (for file or directory)
+#             - p (process running)
+#             - d (any file inside the directory)
+#
+# Additional values:
+# For the registry and for directories, use "->" to look for a specific entry and another
+# "->" to look for the value.
+# Also, use " -> r:^\. -> ..." to search all files in a directory
+# For files, use "->" to look for a specific value in the file.
+#
+# Values can be preceded by: =: (for equal) - default
+#                             r: (for ossec regexes)
+#                             >: (for strcmp greater)
+#                             <: (for strcmp  lower)
+# Multiple patterns can be specified by using " && " between them.
+# (All of them must match for it to return true).
+
+
+# CIS Checks for Red Hat / CentOS 7
+# Based on CIS Benchmark for Red Hat Enterprise Linux 7 v1.1.0
+
+# Vars
+$sshd_file=/etc/ssh/sshd_config;
+
+# RC scripts location
+$rc_dirs=/etc/rc.d/rc2.d,/etc/rc.d/rc3.d,/etc/rc.d/rc4.d,/etc/rc.d/rc5.d;
+
+
+[Testing against the CIS Red Hat Enterprise Linux 7 Benchmark v2.2.0] [any required] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/redhat-release -> r:^Red Hat Enterprise Linux \S+ release 7;
+f:/etc/redhat-release -> r:^CentOS && r:release 7;
+f:/etc/redhat-release -> r:^Cloud && r:release 7;
+f:/etc/redhat-release -> r:^Oracle && r:release 7;
+f:/etc/redhat-release -> r:^Better && r:release 7;
+f:/etc/redhat-release -> r:^OpenVZ && r:release 7;
+
+##########################################
+# 1.1 Filesystem Configuration
+##########################################
+
+# 1.1.1 Disable unused filesystems
+
+[{1.1.1.1} Filesystem Configuration - Ensure mounting of cramfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+cramfs\.+/bin/true;
+
+[{1.1.1.2} Filesystem Configuration - Ensure mounting of freevxfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+freevxfs\.+/bin/true;
+
+[{1.1.1.3} Filesystem Configuration - Ensure mounting of jffs2 filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+jffs2\.+/bin/true;
+
+[{1.1.1.4} Filesystem Configuration - Ensure mounting of hfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+hfs\.+/bin/true;
+
+[{1.1.1.5} Filesystem Configuration - Ensure mounting of hfsplus filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+hfsplus\.+/bin/true;
+
+[{1.1.1.6} Filesystem Configuration - Ensure mounting of squashfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+squashfs\.+/bin/true;
+
+[{1.1.1.7} Filesystem Configuration - Ensure mounting of udf filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+udf\.+/bin/true;
+
+[{1.1.1.8} Filesystem Configuration - Ensure mounting of vfat filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+vfat\.+/bin/true;
+
+[{1.1.2} Filesystem Configuration - Ensure separate partition exists for /tmp (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:/tmp;
+
+[{1.1.3} Filesystem Configuration - Ensure nodev option set on /tmp partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/tmp && !r:nodev;
+
+[{1.1.4} Filesystem Configuration - Ensure nosuid option set on /tmp partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/tmp && !r:nosuid;
+
+[{1.1.5} Filesystem Configuration - Ensure noexec option set on /tmp partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/tmp && !r:noexec;
+
+[{1.1.6} Filesystem Configuration - Ensure separate partition exists for /var (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r^# && !r:/var;
+
+[{1.1.7} Filesystem Configuration - Ensure separate partition exists for /var/tmp (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:/var/tmp;
+
+[{1.1.8} Filesystem Configuration - Ensure nodev option set on /var/tmp partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/var/tmp && !r:nodev;
+
+[{1.1.9} Filesystem Configuration - Ensure nosuid option set on /var/tmp partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/var/tmp && !r:nosuid;
+
+[{1.1.10} Filesystem Configuration - Ensure noexec option set on /var/tmp partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/var/tmp && !r:noexec;
+
+[{1.1.11} Filesystem Configuration - Ensure separate partition exists for /var/log (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:/var/log;
+
+[{1.1.12} Filesystem Configuration - Ensure separate partition exists for /var/log/audit (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:/var/log/audit;
+
+[{1.1.13} Filesystem Configuration - Ensure separate partition exists for /home (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:/home;
+
+[{1.1.14} Filesystem Configuration - Ensure nodev option set on /home partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/home && !r:nodev;
+
+[{1.1.15} Filesystem Configuration - Ensure nodev option set on /dev/shm partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/dev/shm && !r:nodev;
+
+[{1.1.16} Filesystem Configuration - Ensure nosuid option set on /dev/shm partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/dev/shm && !r:nosuid;
+
+[{1.1.17} Filesystem Configuration - Ensure noexec option set on /dev/shm partition (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/dev/shm && !r:noexec;
+
+[{1.1.18} Filesystem Configuration - Ensure nodev option set on removable media partitions (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/media && !r:nodev;
+
+[{1.1.19} Filesystem Configuration - Ensure nosuid option set on removable media partitions (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/media && !r:nosuid;
+
+[{1.1.20} Filesystem Configuration - Ensure noexec option set on removable media partitions (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/fstab -> !r:^# && r:/media && !r:noexec;
+
+[{1.1.21} Filesystem Configuration - Ensure sticky bit is set on all world-writable directories (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{1.1.22} Filesystem Configuration - Disable Automounting (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/systemd/system/multi-user.target.wants/autofs.service -> !r:Exec;
+
+
+##########################################
+# 1.2 Configure Software Updates
+##########################################
+
+[{1.2.1} Configure Software Updates - Ensure package manager repositories are configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/etc/yum.repos.d -> !^redhat.repo$;
+
+[{1.2.2} Configure Software Updates - Ensure gpgcheck is globally activated (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/yum.conf -> !r:^gpgcheck=1$;
+d:/etc/yum.repos.d -> r:^\. -> r:^gpgcheck\D+0$;
+
+[{1.2.3} Configure Software Updates - Ensure GPG keys are configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/etc/pki/rpm-gpg -> !^RPM-GPG-KEY-redhat-release$;
+
+[{1.2.4} Configure Software Updates - Ensure Red Hat Subscription Manager connection is configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/etc/pki/entitlement -> !^*$;
+
+[{1.2.5} Configure Software Updates - Disable the rhnsd Daemon (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+p:rhnsd;
+
+
+###############################################
+# 1.3 Advanced Intrusion Detection Environment
+###############################################
+
+# Skipped, this control is obsoleted by OSSEC
+
+
+###############################################
+# 1.4 Secure Boot Settings
+###############################################
+
+[{1.4.1} Secure Boot Settings - Ensure permissions on bootloader config are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{1.4.2} Secure Boot Settings - Ensure bootloader password is set (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/boot/grub2/user.cfg -> !r:^GRUB2_PASSWORD;
+
+[{1.4.3} Secure Boot Settings - Ensure authentication required for single user mode (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/emergency.service -> !r:/usr/sbin/sulogin;
+f:/usr/lib/systemd/system/rescue.service -> !r:/usr/sbin/sulogin;
+
+
+###############################################
+# 1.5  Additional Process Hardening
+###############################################
+
+[{1.5.1} Additional Process Hardening - Ensure core dumps are restricted (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/security/limits.conf -> !r:hard\.+core\.+0;
+
+[{1.5.2} Additional Process Hardening - Ensure XD/NX support is enabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/var/log/dmesg -> !r:NX \(Execute Disable\) protection: active;
+
+[{1.5.3} Additional Process Hardening - Ensure address space layout randomization (ASLR) is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/kernel/randomize_va_space -> !r:^2$;
+
+[{1.5.4} Additional Process Hardening - Ensure prelink is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/etc/sysconfig -> ^prelink$;
+
+
+###############################################
+# 1.6 Mandatory Access Control
+###############################################
+
+# 1.6.1 Configure SELinux
+
+[{1.6.1.1} Mandatory Access Control - Ensure SELinux is not disabled in bootloader configuration (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/grub2.cfg -> r:selinux=0;
+d:/etc/grub.d -> r:^\. -> r:^selinux\D+0$;
+
+[{1.6.1.2} Mandatory Access Control - Ensure the SELinux state is enforcing (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/selinux/config -> !r:SELINUX=enforcing;
+
+[{1.6.1.3} Mandatory Access Control - Ensure SELinux policy is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/selinux/config -> !r:SELINUXTYPE=targeted;
+
+[{1.6.1.4} Mandatory Access Control - Ensure SETroubleshoot is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:$rc_dirs -> ^S\d\dsetroubleshoot$;
+f:/usr/share/dbus-1/services/sealert.service -> r:Exec=/usr/bin/sealert;
+
+[{1.6.1.5} Mandatory Access Control - Ensure the MCS Translation Service (mcstrans) is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:$rc_dirs -> ^S\d\dmctrans$;
+f:/usr/lib/systemd/system/mcstransd.service -> r:ExecStart=/usr/sbin/mcstransd;
+
+[{1.6.2} Mandatory Access Control - Ensure SELinux is installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/selinux/config -> !r:SELINUX=enforcing;
+f:/etc/selinux/config -> !r:SELINUXTYPE=targeted;
+
+
+###############################################
+# 1.7 Warning Banners
+###############################################
+
+# 1.7.1 Command Line Warning Banners
+
+[{1.7.1.1} Warning Banners - Ensure message of the day is configured properly (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/motd -> r:\\v;
+f:/etc/motd -> r:\\r;
+f:/etc/motd -> r:\\m;
+f:/etc/motd -> r:\\s;
+
+[{1.7.1.2} Warning Banners - Ensure local login warning banner is configured properly (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/issue -> r:\\v;
+f:/etc/issue -> r:\\r;
+f:/etc/issue -> r:\\m;
+f:/etc/issue -> r:\\s;
+
+[{1.7.1.3} Warning Banners - Ensure remote login warning banner is configured properly (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/issue.net -> r:\\v;
+f:/etc/issue.net -> r:\\r;
+f:/etc/issue.net -> r:\\m;
+f:/etc/issue.net -> r:\\s;
+
+[{1.7.1.4} Warning Banners - Ensure permissions on /etc/motd are configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{1.7.1.5} Warning Banners - Ensure permissions on /etc/issue are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{1.7.1.6} Warning Banners - Ensure permissions on /etc/issue.net are configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{1.7.2} Warning Banners - Ensure GDM login banner is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/etc/dconf/profile -> r:^gdm -> r:^user && r:^system && r:^file; 
+
+
+###############################################
+# 1.8 YUM
+###############################################
+
+[{1.8} 1.8 Ensure updates, patches, and additional security software are installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO 
+
+
+###############################################
+# 2 Services
+###############################################
+
+# 2.1 inetd Services
+
+[{2.1.1} Services - Ensure chargen services are not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/xinetd.d/chargen-dgram -> !r:^# && r:disable && r:no;
+f:/etc/xinetd.d/chargen-stream -> !r:^# && r:disable && r:no;
+
+[{2.1.2} Services - Ensure daytime services are not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/xinetd.d/daytime-dgram -> !r:^# && r:disable && r:no;
+f:/etc/xinetd.d/daytime-stream -> !r:^# && r:disable && r:no;
+
+[{2.1.3} Services - Ensure discard services are not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/xinetd.d/discard-dgram -> !r:^# && r:disable && r:no;
+f:/etc/xinetd.d/discard-stream -> !r:^# && r:disable && r:no;
+
+[{2.1.4} Services - Ensure echo services are not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/xinetd.d/echo-dgram -> !r:^# && r:disable && r:no;
+f:/etc/xinetd.d/echo-stream -> !r:^# && r:disable && r:no;
+
+[{2.1.5} Services - Ensure time services are not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/xinetd.d/time-dgram -> !r:^# && r:disable && r:no;
+f:/etc/xinetd.d/time-stream -> !r:^# && r:disable && r:no;
+
+[{2.1.6} Services - Ensure tftp server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/xinetd.d/tftp -> !r:^# && r:disable && r:no;
+
+[{2.1.7} Services - Ensure xinetd is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+#d:/etc/systemd/system/multi-user.target.wants -> ^xinetd\.service$;
+f:/usr/lib/systemd/system/xinetd.service -> r:Exec;
+
+
+###############################################
+# 2.2 Special Purpose Services
+###############################################
+
+# 2.2.1 Time Synchronization
+
+[{2.2.1.1} Special Purpose Services - Ensure time synchronization is in use (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/ntpd.service -> !r:Exec;
+
+[{2.2.1.2} Special Purpose Services - Ensure ntp is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ntp.conf -> !r:^restrict -4 default nomodify notrap nopeer noquery;
+f:/etc/ntp.conf -> !r:^restrict -6 default nomodify notrap nopeer noquery;
+f:/etc/ntp.conf -> !r:^server;
+f:/etc/sysconfig/ntpd -> !r:OPTIONS="-u ntp:ntp;
+
+[{2.2.1.3} Special Purpose Services - Ensure chrony is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/chrony.conf -> !r:^server;
+f:/etc/chrony.conf -> !r:^pool;
+f:/etc/sysconfig/chronyd -> !r:^OPTIONS\=\"\-u chrony\";
+
+[{2.2.2} Special Purpose Services - Ensure X Window System is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+p:gdm-x-session;
+
+[{2.2.3} Special Purpose Services - Ensure Avahi Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+p:avahi-daemon;
+
+[{2.2.4} Special Purpose Services - Ensure CUPS is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/cups.service -> r:Exec;
+
+[{2.2.5} Special Purpose Services - Ensure DHCP Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/dhcpd.service -> r:Exec;
+
+[{2.2.6} Special Purpose Services - Ensure LDAP server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/slapd.service -> r:Exec;
+
+[{2.2.7} Special Purpose Services - Ensure NFS and RPC are not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/nfs.service -> r:Exec;
+f:/usr/lib/systemd/system/nfslock.service -> r:Exec;
+f:/usr/lib/systemd/system/rpcbind.service -> r:Exec;
+
+[{2.2.8} Special Purpose Services - Ensure DNS Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/named.service -> r:Exec;
+
+[{2.2.9} Special Purpose Services - Ensure FTP Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/vsftpd.service -> r:Exec;
+
+[{2.2.10} Special Purpose Services - Ensure HTTP server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/httpd.service -> r:Exec;
+f:/usr/lib/systemd/system/nginx.service -> r:Exec;
+
+[{2.2.11} Special Purpose Services - Ensure IMAP and POP3 server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/dovecot.service -> r:Exec;
+
+[{2.2.12} Special Purpose Services - Ensure Samba is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/smb.service -> r:Exec;
+
+[{2.2.13} Special Purpose Services - Ensure HTTP Proxy Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/squid.service -> r:Exec;
+
+[{2.2.14} Special Purpose Services - Ensure SNMP Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/snmpd.service -> r:Exec;
+
+[{2.2.15} Special Purpose Services - Ensure mail transfer agent is configured for local-only mode (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/postfix/main.cf -> !r:^inet_interfaces = localhost$;
+
+[{2.2.16} Special Purpose Services - Ensure NIS Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/ypserv.service -> r:Exec;
+
+[{2.2.17} Special Purpose Services - Ensure rsh server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/rsh.socket -> r:^Listen;
+f:/usr/lib/systemd/system/rlogin.socket -> r:^Listen;
+f:/usr/lib/systemd/system/rexec.socket -> r:^Listen;
+
+[{2.2.18} Special Purpose Services - Ensure talk server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/ntalk.service -> r:Exec;
+
+[{2.2.19} Special Purpose Services - Ensure telnet server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/telnet.socket -> r:^Listen;
+
+[{2.2.20} Special Purpose Services - Ensure tftp server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/tftp.socket -> r:^Listen;
+
+[{2.2.21} Special Purpose Services - Ensure rsync service is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/systemd/system/multi-user.target.wants/rsyncd.service -> r:Exec;
+
+
+###############################################
+# 2.3 Service Clients
+###############################################
+
+[{2.3.1} Service Clients - Ensure NIS Client is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/ypbind.service -> r:Exec;
+
+[{2.3.2} Service Clients - Ensure rsh client is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/bin -> ^rsh$;
+d:/usr/bin -> ^rsh$;
+
+[{2.3.3} Service Clients - Ensure talk client is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/bin -> ^talk$;
+d:/usr/bin -> ^talk$;
+
+[{2.3.4} Service Clients - Ensure telnet client is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/bin -> ^telnet$;
+d:/usr/bin -> ^telnet$;
+
+[{2.3.5} Service Clients - Ensure LDAP client is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/etc/pam.d -> r:^\. -> r:ldap;
+#d:/etc/openldap -> ^ldap.conf$;
+
+
+###############################################
+# 3 Network Configuration
+###############################################
+
+# 3.1 Network Parameters (Host Only)
+
+[{3.1.1} Network Configuration - Ensure IP forwarding is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/ip_forward -> 1;
+
+[{3.1.2} Network Configuration - Ensure packet redirect sending is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/conf/all/send_redirects -> 1;
+f:/proc/sys/net/ipv4/conf/default/send_redirects -> 1;
+
+# 3.2 Network Parameters (Host and Router)
+
+[{3.2.1} Network Configuration - Ensure source routed packets are not accepted (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/conf/all/accept_source_route -> 1;
+f:/proc/sys/net/ipv4/conf/default/accept_source_route -> 1;
+
+[{3.2.2} Network Configuration - Ensure ICMP redirects are not accepted (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/conf/all/accept_redirects -> 1;
+f:/proc/sys/net/ipv4/conf/default/accept_redirects -> 1;
+
+[{3.2.3} Network Configuration - Ensure secure ICMP redirects are not accepted (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/conf/all/secure_redirects -> 1;
+f:/proc/sys/net/ipv4/conf/default/secure_redirects -> 1;
+
+[{3.2.4} Network Configuration - Ensure suspicious packets are logged (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/conf/all/log_martians -> 0;
+f:/proc/sys/net/ipv4/conf/default/log_martians -> 0;
+
+[{3.2.5} Network Configuration - Ensure broadcast ICMP requests are ignored (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts -> 0;
+
+[{3.2.6} Network Configuration - Ensure bogus ICMP responses are ignored (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/icmp_ignore_bogus_error_responses -> 0;
+
+[{3.2.7} Network Configuration - Ensure Reverse Path Filtering is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/conf/all/rp_filter -> 0;
+f:/proc/sys/net/ipv4/conf/default/rp_filter -> 0;
+
+[{3.2.8} Network Configuration - Ensure TCP SYN Cookies is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv4/tcp_syncookies -> 0;
+
+
+###############################################
+# 3.3 IPv6
+###############################################
+
+[{3.3.1} IPv6 - Ensure IPv6 router advertisements are not accepted (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv6/conf/all/accept_ra -> 1;
+f:/proc/sys/net/ipv6/conf/default/accept_ra -> 1;
+
+[{3.3.2} IPv6 - Ensure IPv6 redirects are not accepted (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/proc/sys/net/ipv6/conf/all/accept_redirects -> 1;
+f:/proc/sys/net/ipv6/conf/default/accept_redirects -> 1;
+
+[{3.3.3} IPv6 - Ensure IPv6 is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/boot/grub2/grub.cfg -> !r:ipv6.disable=1;
+
+
+###############################################
+# 3.4 TCP Wrappers
+###############################################
+
+[{3.4.1} TCP Wrappers - Ensure TCP Wrappers is installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/usr/lib64 -> !^libwrap.so.0$;
+
+[{3.4.2} TCP Wrappers - Ensure /etc/hosts.allow is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/etc -> !^hosts.allow$;
+
+[{3.4.3} TCP Wrappers - Ensure /etc/hosts.deny is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+d:/etc -> !^hosts.deny$;
+
+[{3.4.4} TCP Wrappers - Ensure permissions on /etc/hosts.allow are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{3.4.5} TCP Wrappers - Ensure permissions on /etc/hosts.deny are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+
+###############################################
+# 3.5 Uncommon Network Protocols
+###############################################
+
+[{3.5.1} Uncommon Network Protocols - Ensure DCCP is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+dccp\.+/bin/true;
+
+[{3.5.2} Uncommon Network Protocols - Ensure SCTP is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+sctp\.+/bin/true;
+
+[{3.5.3} Uncommon Network Protocols - Ensure RDS is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+rds\.+/bin/true;
+
+[{3.5.4} Uncommon Network Protocols - Ensure TIPC is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/modprobe.d/CIS.conf -> !r:^install\.+tipc\.+/bin/true;
+
+
+###############################################
+# 3.6 Firewall Configuration
+###############################################
+
+[{3.6.1} Firewall Configuration - Ensure iptables is installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/iptables.service -> !r:Exec;
+
+[{3.6.2} Firewall Configuration - Ensure default deny firewall policy (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/sysconfig/iptables -> !r:INPUT DROP;
+f:/etc/sysconfig/iptables -> !r:OUTPUT DROP;
+f:/etc/sysconfig/iptables -> !r:FORWARD DROP;
+
+[{3.6.3} Firewall Configuration - Ensure loopback traffic is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/sysconfig/iptables -> !r:INPUT -i lo -j ACCEPT;
+f:/etc/sysconfig/iptables -> !r:OUTPUT -o lo -j ACCEPT;
+
+[{3.6.4} Firewall Configuration - Ensure outbound and established connections are configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/sysconfig/iptables -> !r:INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT;
+f:/etc/sysconfig/iptables -> !r:OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT;
+
+[{3.6.5} Firewall Configuration - Ensure firewall rules exist for all open ports (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{3.7} Wireless Configuration - Ensure wireless interfaces are disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+
+###############################################
+# 4 Logging and Auditing
+###############################################
+
+# 4.1 Configure System Accounting (auditd)
+
+# 4.1.1 Configure Data Retention
+
+[{4.1.1.1} Logging and Auditing - Ensure audit log storage size is configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/auditd.conf -> !r:^max_log_file;
+
+[{4.1.1.2} Logging and Auditing - Ensure system is disabled when audit logs are full (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/auditd.conf -> !r:^space_left_action = email;
+f:/etc/audit/auditd.conf -> !r:^action_mail_acct = root;
+f:/etc/audit/auditd.conf -> !r:^admin_space_left_action = halt;
+
+[{4.1.1.3} Logging and Auditing - Ensure audit logs are not automatically deleted (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/auditd.conf -> !r:^max_log_file_action = keep_logs;
+
+[{4.1.2} Logging and Auditing - Ensure auditd service is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/systemd/system/multi-user.target.wants/auditd.service -> !r:Exec;
+
+[{4.1.3} Logging and Auditing - Ensure auditing for processes that start prior to auditd is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/boot/grub2/grub.cfg -> !r:audit=1;
+
+[{4.1.4} Logging and Auditing - Ensure events that modify date and time information are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:time-change;
+
+[{4.1.5} Logging and Auditing - Ensure events that modify user/group information are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:/etc/group;
+f:/etc/audit/audit.rules -> !r:/etc/passwd;
+f:/etc/audit/audit.rules -> !r:/etc/gshadow;
+f:/etc/audit/audit.rules -> !r:/etc/shadow;
+f:/etc/audit/audit.rules -> !r:/etc/security/opasswd;
+
+[{4.1.6} Logging and Auditing - Ensure events that modify the system's network environment are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:sethostname;
+f:/etc/audit/audit.rules -> !r:/etc/issue;
+f:/etc/audit/audit.rules -> !r:/etc/issue.net;
+f:/etc/audit/audit.rules -> !r:hosts;
+f:/etc/audit/audit.rules -> !r:/etc/sysconfig/network;
+f:/etc/audit/audit.rules -> !r:/etc/sysconfig/network-scripts;
+
+[{4.1.7} Logging and Auditing - Ensure events that modify the system's Mandatory Access Controls are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:MAC-policy;
+
+[{4.1.8} Logging and Auditing - Ensure login and logout events are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:logins;
+
+[{4.1.9} Logging and Auditing - Ensure session initiation information is collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:session;
+
+[{4.1.10} Logging and Auditing - Ensure discretionary access control permission modification events are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:chmod;
+f:/etc/audit/audit.rules -> !r:chown;
+f:/etc/audit/audit.rules -> !r:setxattr;
+
+[{4.1.11} Logging and Auditing - Ensure unsuccessful unauthorized file access attempts are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:EACCES;
+f:/etc/audit/audit.rules -> !r:EPERM;
+
+[{4.1.12} Logging and Auditing - Ensure use of privileged commands is collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{4.1.13} Logging and Auditing - Ensure successful file system mounts are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:mount;
+
+[{4.1.14} Logging and Auditing - Ensure file deletion events by users are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:unlink;
+
+[{4.1.15} Logging and Auditing - Ensure changes to system administration scope (sudoers) is collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:/etc/sudoers;
+f:/etc/audit/audit.rules -> !r:/etc/sudoers.d;
+
+[{4.1.16} Logging and Auditing - Ensure system administrator actions (sudolog) are collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:actions;
+
+[{4.1.17} Logging and Auditing - Ensure kernel module loading and unloading is collected (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/audit/audit.rules -> !r:modules;
+
+[{4.1.18} Logging and Auditing - Ensure the audit configuration is immutable (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+
+###############################################
+# 4.2 Configure Logging
+###############################################
+
+# 4.2.1 Configure rsyslog
+
+[{4.2.1.1} Configure Logging - Ensure rsyslog Service is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/rsyslog.service -> !r:Exec;
+
+[{4.2.1.2} Configure Logging - Ensure logging is configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/rsyslog.conf -> !r:imuxsock;
+f:/etc/rsyslog.conf -> !r:imjournal;
+#d:/etc -> !^rsyslog.conf$;
+
+[{4.2.1.3} Configure Logging - Ensure rsyslog default file permissions configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{4.2.1.4} Configure Logging - Ensure rsyslog is configured to send logs to a remote log host (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/rsyslog.conf -> !r:\@\@;
+
+[{4.2.1.5} Configure Logging - Ensure remote rsyslog messages are only accepted on designated log hosts. (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+# 4.2.2 Configure syslog-ng
+
+[{4.2.2.1} Configure Logging - Ensure syslog-ng service is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/syslog-ng.service -> !r:Exec;
+
+[{4.2.2.2} Configure Logging - Ensure logging is configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/syslog-ng/syslog-ng.conf -> !r:options;
+#d:/etc/syslog-ng -> ^syslog-ng.conf;
+
+[{4.2.2.3} Configure Logging - Ensure syslog-ng default file permissions configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{4.2.2.4} Configure Logging - Ensure syslog-ng is configured to send logs to a remote log host (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/syslog-ng/syslog-ng.conf -> !r:^destination logserver;
+
+[{4.2.2.5} Configure Logging - Ensure remote syslog-ng messages are only accepted on designated log hosts (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{4.2.3} Configure Logging - Ensure rsyslog or syslog-ng is installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/rsyslog.service -> !r:Exec;
+f:/usr/lib/systemd/system/syslog-ng.service -> !r:Exec;
+
+[{4.2.4} Configure Logging - Ensure permissions on all logfiles are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{4.3} Configure Logging - Ensure logrotate is configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/logrotate.d/syslog -> !r:/var/log/messages;
+d:/etc -> !^logrotate.conf$;
+
+
+###############################################
+# 5 Access, Authentication and Authorization
+###############################################
+
+
+###############################################
+# 5.1 Configure cron
+###############################################
+
+[{5.1.1} Configure cron - Ensure cron daemon is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/usr/lib/systemd/system/crond.service -> !r:Exec;
+
+[{5.1.2} Configure cron - Ensure permissions on /etc/crontab are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.1.3} Configure cron - Ensure permissions on /etc/cron.hourly are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.1.4} Configure cron - Ensure permissions on /etc/cron.daily are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.1.5} Configure cron - Ensure permissions on /etc/cron.weekly are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.1.6} Configure cron - Ensure permissions on /etc/cron.monthly are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.1.7} Configure cron - Ensure permissions on /etc/cron.d are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.1.8} Configure cron - Ensure at/cron is restricted to authorized users (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+
+###############################################
+# 5.2 SSH Server Configuration
+###############################################
+
+[{5.2.1} SSH Server Configuration - Ensure permissions on /etc/ssh/sshd_config are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.2.2} SSH Server Configuration - Ensure SSH Protocol is set to 2 (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:Protocol\.+1;
+
+[{5.2.3} SSH Server Configuration - Ensure SSH LogLevel is set to INFO (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && !r:LogLevel\.+INFO;
+
+[{5.2.4} SSH Server Configuration - Ensure SSH X11 forwarding is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:X11Forwarding\.+yes;
+f:/etc/ssh/sshd_config -> r:^#\s*X11Forwarding;
+
+[{5.2.5} SSH Server Configuration - Ensure SSH MaxAuthTries is set to 4 or less (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:$sshd_file -> !r:^# && r:MaxAuthTries && !r:3\s*$;
+f:$sshd_file -> r:^#\s*MaxAuthTries;
+f:$sshd_file -> !r:MaxAuthTries;
+
+[{5.2.6} SSH Server Configuration - Ensure SSH IgnoreRhosts is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:IgnoreRhosts\.+no;
+
+[{5.2.7} SSH Server Configuration - Ensure SSH HostbasedAuthentication is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:HostbasedAuthentication\.+yes;
+
+[{5.2.8} SSH Server Configuration - Ensure SSH root login is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:PermitRootLogin\.+yes;
+f:/etc/ssh/sshd_config -> r:^#\s*PermitRootLogin;
+
+[{5.2.9} SSH Server Configuration - Ensure SSH PermitEmptyPasswords is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:PermitEmptyPasswords\.+yes;
+
+[{5.2.10} SSH Server Configuration - Ensure SSH PermitUserEnvironment is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:PermitUserEnvironment\.+yes;
+
+[{5.2.11} SSH Server Configuration - Ensure only approved MAC algorithms are used (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> r:^Ciphers\s*$;
+
+[{5.2.12} SSH Server Configuration - Ensure SSH Idle Timeout Interval is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:ClientAliveInterval && !r:300\s*$;
+f:/etc/ssh/sshd_config -> !r:^# && r:ClientAliveCountMax && !r:0\s*$;
+
+[{5.2.13} SSH Server Configuration - Ensure SSH LoginGraceTime is set to one minute or less (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> !r:^# && r:LoginGraceTime && !r:60\s*$;
+
+[{5.2.14} SSH Server Configuration - Ensure SSH access is limited (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> r:^AllowGroups\s*$;
+
+[{5.2.15} SSH Server Configuration - Ensure SSH warning banner is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/ssh/sshd_config -> r:^Banner \s*$;
+
+
+###############################################
+# 5.3 Configure PAM
+###############################################
+
+[{5.3.1} Configure Pam - Ensure password creation requirements are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/security/pwquality.conf -> !r:^minlen = 14\s*$;
+f:/etc/security/pwquality.conf -> !r:^dcredit = -1\s*$;
+f:/etc/security/pwquality.conf -> !r:^ucredit = -1\s*$;
+f:/etc/security/pwquality.conf -> !r:^ocredit = -1\s*$;
+f:/etc/security/pwquality.conf -> !r:^lcredit = -1\s*$;
+
+[{5.3.2} Configure Pam - Ensure lockout for failed password attempts is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/pam.d/password-auth -> !r:pam_faillock.so;
+f:/etc/pam.d/system-auth -> !r:pam_faillock.so;
+
+[{5.3.3} Configure Pam - Ensure password reuse is limited (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/pam.d/password-auth -> r:remember && !r:5\s*$;
+f:/etc/pam.d/system-auth -> r:remember && !r:5\s*$;
+
+[{5.3.4} Configure Pam - Ensure password hashing algorithm is SHA-512 (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/pam.d/password-auth -> !r:^password\.+sufficient\.+pam_unix.so\.+sha512;
+f:/etc/pam.d/system-auth -> !r:^password\.+sufficient\.+pam_unix.so\.+sha512;
+
+
+###############################################
+# 5.4 User Accounts and Environment
+###############################################
+
+# 5.4.1 Set Shadow Password Suite Parameters
+
+[{5.4.1.1} User Accounts and Environment - Ensure password expiration is 365 days or less (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/login.defs -> r:^PASS_MAX_DAYS && !r:90\s*$;
+
+[{5.4.1.2} User Accounts and Environment - Ensure minimum days between password changes is 7 or more (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/login.defs -> r:^PASS_MIN_DAYS && !r:7\s*$;
+
+[{5.4.1.3} User Accounts and Environment - Ensure password expiration warning days is 7 or more (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/login.defs -> r:^PASS_WARN_AGE && !r:7\s*$;
+
+[{5.4.1.4} User Accounts and Environment - Ensure inactive password lock is 30 days or less (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.4.1.5} User Accounts and Environment - Ensure all users last password change date is in the past (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.4.2} User Accounts and Environment - Ensure system accounts are non-login (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/passwd -> !r:^bin: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^daemon: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^adm: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^lp: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^mail: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^operator: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^games: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^ftp: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^nobody: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^systemd: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^dbus: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^polkit: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^ntp: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^tss: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^sshd: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> !r:^postfix: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+
+[{5.4.3} User Accounts and Environment - Ensure default group for the root account is GID 0 (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/passwd -> !r:^root: && r:^\w+:\w+:0:0:;
+
+[{5.4.4} User Accounts and Environment - Ensure default user umask is 027 or more restrictive (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/bashrc -> !r:umask 027\s*$;
+f:/etc/profile -> !r:umask 027\s*$;
+
+[{5.4.5} User Accounts and Environment - Ensure default user shell timeout is 900 seconds or less (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/bashrc -> r:^TMOUT\s*$;
+f:/etc/profile -> r:^TMOUT\s*$;
+
+[{5.5} User Accounts and Environment - Ensure root login is restricted to system console (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{5.6} User Accounts and Environment - Ensure access to the su command is restricted (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/pam.d/su -> !r:^auth\.+required\.+pam_wheel.so\.+use_uid;
+f:/etc/group -> r:^wheel\s*$;
+
+
+###############################################
+# 6.1 System File Permissions
+###############################################
+
+[{6.1.1} System File Permissions - Audit system file permissions (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.2} System File Permissions - Ensure permissions on /etc/passwd are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.3} System File Permissions - Ensure permissions on /etc/shadow are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.4} System File Permissions - Ensure permissions on /etc/group are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.5} System File Permissions - Ensure permissions on /etc/gshadow are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.6} System File Permissions - Ensure permissions on /etc/passwd- are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.7} System File Permissions - Ensure permissions on /etc/shadow- are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.8} System File Permissions - Ensure permissions on /etc/group- are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.9} System File Permissions - Ensure permissions on /etc/gshadow- are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.10} System File Permissions - Ensure no world writable files exist (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.11} System File Permissions - Ensure no unowned files or directories exist (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.12} System File Permissions - Ensure no ungrouped files or directories exist (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.13} System File Permissions - Audit SUID executables (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.1.14} System File Permissions - Audit SGID executables (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+
+###############################################
+# 6.2 User and Group Settings
+###############################################
+
+[{6.2.1} User and Group Settings - Ensure password fields are not empty (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.2} User and Group Settings - Ensure no legacy "+" entries exist in /etc/passwd (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.3} User and Group Settings - Ensure no legacy "+" entries exist in /etc/shadow (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.4} User and Group Settings - Ensure no legacy "+" entries exist in /etc/group (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.5} User and Group Settings - Ensure root is the only UID 0 account (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:/etc/passwd -> !r:^# && !r:^root: && r:^\w+:\w+:0:;
+
+[{6.2.6} User and Group Settings - Ensure root PATH Integrity (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.7} User and Group Settings - Ensure all users' home directories exist (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.8} User and Group Settings - Ensure users' home directories permissions are 750 or more restrictive (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.9} User and Group Settings - Ensure users own their home directories (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.10} User and Group Settings - Ensure users' dot files are not group or world writable (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.11} User and Group Settings - Ensure no users have .forward files (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.12} User and Group Settings - Ensure no users have .netrc files (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.13} User and Group Settings - Ensure users' .netrc Files are not group or world accessible (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.14} User and Group Settings - Ensure no users have .rhosts files (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.15} User and Group Settings - Ensure all groups in /etc/passwd exist in /etc/group (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.16} User and Group Settings - Ensure no duplicate UIDs exist (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.17} User and Group Settings - Ensure no duplicate GIDs exist (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.18} User and Group Settings - Ensure no duplicate user names exist (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
+
+[{6.2.19} User and Group Settings - Ensure no duplicate group names exist (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+# TODO
