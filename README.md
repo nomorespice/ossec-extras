@@ -33,6 +33,69 @@ __Example ossec.conf__
     <level>7</level>
   </active-response>
 ```
+## <a name="cis_debian_linux_rcl.txt"></a>cis_debian_linux_rcl.txt
+
+cis_debian_linux_rcl.txt is part of the OSSEC system audit rootcheck functionality. This file has been updated for the latest version of the CIS Debian Linux Benchmark: v1.1.0 - 12-28-2017
+
+Some rules are not implemented.
+
+This has been tested using OSSEC version 2.9.3. Host OS tested was Ubuntu 18.04.
+
+__Usage__
+
+On the OSSEC client, place cis_debian_linux_rcl.txt into your $OSSEC_HOME/etc/shared directory. Ensure your $OSSEC_HOME/etc/ossec.conf file is configured to use cis_debian_linux_rcl.txt.
+
+__Example ossec.conf__
+
+```
+  <rootcheck>
+    <system_audit>/var/ossec/etc/shared/cis_debian_linux_rcl.txt</system_audit>
+  </rootcheck>
+```
+
+__Reset the rootcheck database__
+
+On the OSSEC server, reset (clear) the rootcheck database with the following command:
+
+```
+$OSSEC_HOME/bin/rootcheck_control -u <id>
+```
+
+__Restart OSSEC client__
+
+On the OSSEC client, restart the client with the following command:
+
+```
+$OSSEC_HOME/bin/ossec-control restart
+```
+
+__Report__
+
+Once the rootcheck process has completed, view the report using the following command:
+
+```
+$OSSEC_HOME/rootcheck_control -i <id> -L
+```
+
+__Example Report__
+
+```
+[root@machine ~]# /var/ossec/bin/rootcheck_control -i 100 -L
+
+Policy and auditing events for agent 'test (100) - fdfd:0:0:0::1/128':
+
+Resolved events: 
+
+** No entries found.
+
+Last scan: 2018 May 31 11:18:22
+
+System Audit: System Audit: Testing against the CIS Debian Linux Benchmark v1.1.0. File: /etc/debian_version. Reference: CIS Debian Benchmark v1.1.0 .
+
+System Audit: System Audit: {1.1.1.1} Filesystem Configuration - Ensure mounting of cramfs filesystems is disabled (Scored). File: /etc/modprobe.d/blacklist-ath_pci.conf. Reference: CIS Debian Benchmark v1.1.0 .
+
+System Audit: System Audit: {1.1.3} Filesystem Configuration - Ensure nodev option set on /tmp partition (Scored). File: /etc/fstab. Reference: CIS Debian Benchmark v1.1.0 .
+```
 
 ## <a name="cis_rhel7_linux_rcl.txt"></a>cis_rhel7_linux_rcl.txt
 
