@@ -22,8 +22,7 @@
   -
   
   
-ossec-discord.sh
-
+## ossec-discord.sh
 
 ossec-discord.sh is part of the OSSEC system active response functionality.
 This has been tested using Ubuntu 18.04 and OSSEC version 2.9.3.
