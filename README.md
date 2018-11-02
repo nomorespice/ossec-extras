@@ -2,7 +2,7 @@
 
 
   * [ossec-discord.sh](#ossec-discord.sh)
-  * [nagios-discord.sh](#ossec-discord.sh)
+  * [nagios-discord.sh](#nagios-discord.sh)
   * [cis_debian_linux_rcl.txt](#cis_debian_linux_rcl.txt)
   * [cis_rhel7_linux_rcl.txt](#cis_rhel7_linux_rcl.txt)
   
