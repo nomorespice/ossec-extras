@@ -49,9 +49,9 @@ Next, configure Nagios to use this script for alerting:
 __Example (nagios-object).conf__
 
 ```
-  define command {
-      command_name     notify-ossec-discord
-      command_line     /usr/local/bin/nagios-discord.sh "$HOSTNAME$" "$SERVICEDESC$" "$SERVICESTATEID$" "$SERVICEOUTPUT$"
+define command {
+        command_name     notify-ossec-discord
+        command_line     /usr/local/bin/nagios-discord.sh "$HOSTNAME$" "$SERVICEDESC$" "$SERVICESTATEID$" "$SERVICEOUTPUT$"
 	}
 
 define contact {
