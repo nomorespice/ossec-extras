@@ -7,25 +7,25 @@ CUT=/bin/cut
 ECHO=/bin/echo
 GREP=/bin/grep
 SED=/bin/sed
-STRINGS=/usr/bin/strings
+TR=/bin/tr
 #
 ALERTID=$4
 ACTIVELOG=/var/ossec/logs/active-responses.log
 ALERTLOG=/var/ossec/logs/alerts/alerts.log
 #
 $ECHO "`date` $0 $1 $2 $3 $4 $5 $6 $7 $8" >> $ACTIVELOG
-ALERTFULL=`$CAT $ALERTLOG | $STRINGS | $GREP -A 10 "$ALERTID" | $GREP -v "$ALERTID" -A 10 | $GREP -v "Src IP: " | $GREP -v "User: " | $GREP "Rule: " -A 4 | $CUT -c -139 | $SED 's/\"//g'`
-CONTENT=`$ECHO -n "$ALERTFULL" | $SED '1!G;h;$!d' | $SED -e 's/[;,()'\''<>]//g;s/\[/ /;s/\]//'`
-ALERTLVL=`$ECHO "$ALERTFULL" | $SED -n '1,4s/^.*(level \([0-9]*\).*$/\1/p'`
-if [ $ALERTLVL -ge 10 ]; then CODE=2; else CODE=1; fi
+CONTENT=`$CAT $ALERTLOG | $GREP -A 10 "$ALERTID" | $GREP -v "$ALERTID" -A 10 | $TR '\r\n' ' ' | $TR -cd "'[:alnum:] :./-" | $CUT -c -340`
+HEADER=`$CAT $ALERTLOG | $GREP "$ALERTID" | $TR -cd "'[:alnum:] ,:./-"`
+LVL=`$ECHO "$CONTENT" | $SED -n '1,4s/^.*level \([0-9]*\).*$/\1/p'`
+if [ $LVL -ge 10 ]; then CODE=2; else CODE=1; fi
 #
-GROUP=`$ECHO "$ALERTFULL" | $GREP 'Alert' | $AWK {'print $6'} | $AWK -F"," {'print $1'}`
+GROUP=`$ECHO "$HEADER" | $GREP 'Alert' | $AWK {'print $5'} | $AWK -F"," {'print $1'}`
 if [ "$GROUP" = firewall ]; then
- 	FAC="FW"
+ FAC="FW"
 elif [ "$GROUP" = network ]; then
- 	FAC="NET"
+ FAC="NET"
 else
-	FAC="UNIX"
+ FAC="UNIX"
 fi
 #
 CMD="/usr/local/nagios/var/rw/nagios.cmd"
