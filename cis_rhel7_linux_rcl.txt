@@ -27,7 +27,7 @@
 
 
 # CIS Checks for Red Hat / CentOS 7
-# Based on CIS Benchmark for Red Hat Enterprise Linux 7 v1.1.0
+# Based on CIS Benchmark for Red Hat Enterprise Linux 7 v2.2.0
 
 # Vars
 $sshd_file=/etc/ssh/sshd_config;
