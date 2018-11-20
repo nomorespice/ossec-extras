@@ -6,6 +6,7 @@
   * [ossec-nagios.sh](#ossec-nagios.sh)
   * [cis_debian_linux_rcl.txt](#cis_debian_linux_rcl.txt)
   * [cis_rhel7_linux_rcl.txt](#cis_rhel7_linux_rcl.txt)
+  * [cis_rhel8_linux_rcl.txt](#cis_rhel8_linux_rcl.txt)
   
 ## <a name="nagios-discord.sh"></a>nagios-discord.sh
 
@@ -257,4 +258,47 @@ System Audit: System Audit: {1.2.5} Configure Software Updates - Disable the rhn
 System Audit: System Audit: {1.5.1} Additional Process Hardening - Ensure core dumps are restricted (Scored). File: /etc/security/limits.conf. Reference: CIS RHEL 7 Benchmark v2.2.0 .
 
 System Audit: System Audit: {1.6.1.2} Mandatory Access Control - Ensure the SELinux state is enforcing (Scored). File: /etc/selinux/config. Reference: CIS RHEL 7 Benchmark v2.2.0 .
+```
+## <a name="cis_rhel8_linux_rcl.txt"></a>cis_rhel8_linux_rcl.txt
+
+cis_rhel8_linux_rcl.txt is part of the OSSEC system audit rootcheck functionality. This file WILL be updated for the latest version of the CIS RedHat Enterprise Linux 8 Benchmark.
+
+Some rules are not implemented.
+
+This has been tested using OSSEC version 2.9.3.
+
+__Usage__
+
+On the OSSEC client, place cis_rhel8_linux_rcl.txt into your $OSSEC_HOME/etc/shared directory. Ensure your $OSSEC_HOME/etc/ossec.conf file is configured to use cis_rhel8_linux_rcl.txt.
+
+__Example ossec.conf__
+
+```
+  <rootcheck>
+    <system_audit>/var/ossec/etc/shared/cis_rhel8_linux_rcl.txt</system_audit>
+  </rootcheck>
+```
+
+__Reset the rootcheck database__
+
+On the OSSEC server, reset (clear) the rootcheck database with the following command:
+
+```
+$OSSEC_HOME/bin/rootcheck_control -u <id>
+```
+
+__Restart OSSEC client__
+
+On the OSSEC client, restart the client with the following command:
+
+```
+$OSSEC_HOME/bin/ossec-control restart
+```
+
+__Report__
+
+Once the rootcheck process has completed, view the report using the following command:
+
+```
+$OSSEC_HOME/rootcheck_control -i <id> -L
 ```
