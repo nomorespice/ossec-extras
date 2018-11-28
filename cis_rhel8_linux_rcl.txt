@@ -34,7 +34,7 @@ $sshd_file=/etc/ssh/sshd_config;
 $rc_dirs=/etc/rc.d/rc2.d,/etc/rc.d/rc3.d,/etc/rc.d/rc4.d,/etc/rc.d/rc5.d;
 
 [Testing Red Hat Enterprise Linux 8 Custom Benchmark] [any required] [RHEL 8 Custom]
-f:/etc/redhat-release -> r:^Red Hat Enterprise Linux \S+ release 8;
+f:/etc/redhat-release -> r:^Red Hat Enterprise Linux release 8;
 f:/etc/redhat-release -> r:^CentOS && r:release 8;
 
 ##########################################
