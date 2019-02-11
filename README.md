@@ -7,6 +7,7 @@
   * [cis_debian_linux_rcl.txt](#cis_debian_linux_rcl.txt)
   * [cis_rhel7_linux_rcl.txt](#cis_rhel7_linux_rcl.txt)
   * [cis_rhel8_linux_rcl.txt](#cis_rhel8_linux_rcl.txt)
+  * [cis_bind_dns_rcl.txt](#cis_bind_dns_rcl.txt)
   
 ## <a name="nagios-discord.sh"></a>nagios-discord.sh
 
@@ -276,6 +277,50 @@ __Example ossec.conf__
 ```
   <rootcheck>
     <system_audit>/var/ossec/etc/shared/cis_rhel8_linux_rcl.txt</system_audit>
+  </rootcheck>
+```
+
+__Reset the rootcheck database__
+
+On the OSSEC server, reset (clear) the rootcheck database with the following command:
+
+```
+$OSSEC_HOME/bin/rootcheck_control -u <id>
+```
+
+__Restart OSSEC client__
+
+On the OSSEC client, restart the client with the following command:
+
+```
+$OSSEC_HOME/bin/ossec-control restart
+```
+
+__Report__
+
+Once the rootcheck process has completed, view the report using the following command:
+
+```
+$OSSEC_HOME/rootcheck_control -i <id> -L
+```
+
+## <a name="cis_bind_dns_rcl.txt"></a>cis_bind_dns_rcl.txt
+
+cis_bind_dns_rcl.txt is part of the OSSEC system audit rootcheck functionality.
+
+Some rules are not implemented.
+
+This has been tested using OSSEC version 2.9.3 and BIND version 9.12.3-P1.
+
+__Usage__
+
+On the OSSEC client (on your DNS server), place cis_bind_dns_rcl.txt into your $OSSEC_HOME/etc/shared directory. Ensure your $OSSEC_HOME/etc/ossec.conf file is configured to use cis_bind_dns_rcl.txt.
+
+__Example ossec.conf__
+
+```
+  <rootcheck>
+    <system_audit>/var/ossec/etc/shared/cis_bind_dns_rcl.txt</system_audit>
   </rootcheck>
 ```
 
