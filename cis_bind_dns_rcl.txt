@@ -1,0 +1,185 @@
+# OSSEC BIND DNS Audit - (C) 2019 OSSEC Project
+#
+# Released under the same license as OSSEC.
+# More details at the LICENSE file included with OSSEC or online
+# at: https://github.com/ossec/ossec-hids/blob/master/LICENSE
+#
+# [Application name] [any or all] [reference]
+# type:<entry name>;
+#
+# Type can be:
+#             - f (for file or directory)
+#             - p (process running)
+#             - d (any file inside the directory)
+#
+# Additional values:
+# For the registry and for directories, use "->" to look for a specific entry and another
+# "->" to look for the value.
+# Also, use " -> r:^\. -> ..." to search all files in a directory
+# For files, use "->" to look for a specific value in the file.
+#
+# Values can be preceded by: =: (for equal) - default
+#                             r: (for ossec regexes)
+#                             >: (for strcmp greater)
+#                             <: (for strcmp  lower)
+# Multiple patterns can be specified by using " && " between them.
+# (All of them must match for it to return true).
+
+
+# CIS Checks for BIND DNS
+# Based on CIS Benchmark for ISC BIND DNS Server 9.9 v3.0.1
+
+# Vars
+$NAMED_CONF=/etc/named.conf;
+$NAMED_DIR=/sbin,/usr/local/sbin;
+$NAMED_KEY=/etc/rndc.key,/etc/dhcp-update.key;
+$NAMED_SVC=/usr/lib/systemd/system/named.service;
+
+[Testing against the CIS Benchmark ISC BIND DNS Server 9.9 v3.0.1] [any required] [CIS BIND DNS Benchmark v3.0.1]
+d:$NAMED_DIR -> r:^named$;
+
+###############################################
+# 1 Planning and Architecture
+###############################################
+
+[{1.1} Planning and Architecture - Use a Split-Horizon Architecture (Not Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:^view;
+
+[{1.2} Planning and Architecture - Do Not Install a Multi-Use System (Not Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+p:dhcpd;
+p:httpd;
+p:mysqld;
+p:nginx;
+p:rpcbind;
+p:squid;
+p:xinetd;
+
+[{1.3} Planning and Architecture - Dedicated Name Server Role (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:allow-recursion;
+
+[{1.4} Planning and Architecture - Use Secure Upstream Caching DNS Servers (Not Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> r:forward;
+
+[{1.5} Planning and Architecture - Installing ISC BIND 9 (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+d:$NAMED_DIR -> !r:^named$;
+
+###############################################
+# 2 Restricting Permissions and Ownership
+###############################################
+
+[{2.1} Restricting Permissions and Ownership - Run BIND as a non-root User (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_SVC -> !r:-u named;
+
+[{2.2} Restricting Permissions and Ownership - Give the BIND User Account an Invalid Shell (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{2.3} Restricting Permissions and Ownership - Lock the BIND User Account (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{2.4} Restricting Permissions and Ownership - Set root Ownership of BIND Directories (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{2.5} Restricting Permissions and Ownership - Set root Ownership of BIND Configuration Files (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{2.6} Restricting Permissions and Ownership - Set Group named or root for BIND Directories and Files (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{2.7} Restricting Permissions and Ownership - Set Group and Other Permissions Read-Only for BIND Non-Rtime Directories (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{2.8} Restricting Permissions and Ownership - Set Group and Other Permissions Read-Only for All BIND Files (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{2.9} Restricting Permissions and Ownership - Isolate BIND with chroot'ed Subdirectory (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_SVC -> !r:-t;
+
+###############################################
+# 3 Restricting Queries
+###############################################
+
+[{3.1} Restricting Queries - Ignore Erroneous or Unwanted Queries (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:blackhole;
+
+[{3.2} Restricting Queries - Restrict Recursive Queries (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:allow-recursion;
+
+[{3.3} Restricting Queries - Restrict Query Origins (Not Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:allow-query;
+
+[{3.4} Restricting Queries - Restrict Queries of the Cache (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:allow-query-cache;
+
+###############################################
+# 4 Transaction Signatures - TSIG
+###############################################
+
+[{4.1} Transaction Signatures - Use TSIG Keys 256 Bits in Length (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_KEY -> !r:hmac-sha256|hmac-sha512;
+f:$NAMED_KEY -> r:hmac-md5;
+
+[{4.2} Transaction Signatures - Include Cryptographic Key Files (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> r:secret;
+
+[{4.3} Transaction Signatures - Use Unique Keys for Each Pair of Hosts (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{4.4} Transaction Signatures - Restrict Access to All Key Files (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+[{4.5} Transaction Signatures - Protect TSIG Key Files During Deployment (Not Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBD
+
+###############################################
+# 5 Authenticate Zone Transfers and Updates
+###############################################
+
+[{5.1} Authenticate Zone Transfers and Updates - Securely Authenticate Zone Transfers (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:allow-transfer\.+none|allow-transfer\.+key;
+
+[{5.2} Authenticate Zone Transfers and Updates - Securely Authenticate Dynamic Updates (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:allow-update\.+local|allow-update\.+key;
+
+[{5.3} Authenticate Zone Transfers and Updates - Securely Authenticate Update Forwarding (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:allow-update-forwarding\.+none|allow-update-forwarding\.+key;
+
+###############################################
+# 6 Information Leakage
+###############################################
+
+[{6.1} Information Leakage - Hide BIND Version String (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:version none;
+
+[{6.2} Information Leakage - Hide Nameserver ID (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:server-id none;
+
+###############################################
+# 7 Secure Network Communications
+###############################################
+
+[{7.1} Secure network Communications - Do Not Define a Static Source Port (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> r:query-source;
+f:$NAMED_CONF -> r:query-source-v6;
+
+[{7.2} Secure network Communications - Enable DNSSEC Validation (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:dnssec-enable yes;
+f:$NAMED_CONF -> !r:dnssec-validation yes;
+
+[{7.2} Secure network Communications - Disable the dnssec-accept-expired Option (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> r:dnssec-accept-expired;
+
+###############################################
+# 8 Operations - Logging, Monitoring and Maintenance
+###############################################
+
+[{8.1} Operations - Apply Applicable Updates (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+# TBA
+
+[{8.2} Operations - Configure a Logging File Channel (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:channel;
+
+[{8.3} Operations - Configure a Logging Syslog Channel (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> !r:channel\.+syslog;
+
+[{8.4} Operations - Disable the HTTP Statistics Server (Scored) (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
+f:$NAMED_CONF -> r:statistics-channel;
