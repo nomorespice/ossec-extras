@@ -310,7 +310,7 @@ cis_bind_dns_rcl.txt is part of the OSSEC system audit rootcheck functionality.
 
 Some rules are not implemented.
 
-This has been tested using OSSEC version 2.9.3 and BIND version 9.12.3-P1.
+This has been tested using OSSEC version 2.9.3, Red Hat 7 and BIND version 9.12.3-P1.
 
 __Usage__
 
