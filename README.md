@@ -306,9 +306,7 @@ $OSSEC_HOME/rootcheck_control -i <id> -L
 
 ## <a name="cis_bind_dns_rcl.txt"></a>cis_bind_dns_rcl.txt
 
-cis_bind_dns_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality.
-
-This ruleset is base on the CIS Benchmark ISC BIND DNS Server 9.9 v3.0.1.
+cis_bind_dns_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality. This file has been updated for the latest version of the CIS Benchmark ISC BIND DNS Server 9.9 v3.0.1.
 
 Some rules are not implemented.
 
