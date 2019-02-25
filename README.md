@@ -347,3 +347,46 @@ Once the rootcheck process has completed, view the report using the following co
 ```
 $OSSEC_HOME/rootcheck_control -i <id> -L
 ```
+## <a name="cis_nginx_rcl.txt"></a>cis_nginx_rcl.txt
+
+cis_nginx_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality. This file is based on the draft of the CIS NGINX Benchmark Server v1.0.0.
+
+Some rules are not implemented.
+
+This has been tested using OSSEC version 3.2.0, Red Hat 7 and NGINX version 1.10.1.
+
+__Usage__
+
+On the OSSEC client (on your DNS server), place cis_nginx_rcl.txt into your $OSSEC_HOME/etc/shared directory. Ensure your $OSSEC_HOME/etc/ossec.conf file is configured to use cis_nginx_rcl.txt.
+
+__Example ossec.conf__
+
+```
+  <rootcheck>
+    <system_audit>/var/ossec/etc/shared/cis_nginx_rcl.txt</system_audit>
+  </rootcheck>
+```
+
+__Reset the rootcheck database__
+
+On the OSSEC server, reset (clear) the rootcheck database with the following command:
+
+```
+$OSSEC_HOME/bin/rootcheck_control -u <id>
+```
+
+__Restart OSSEC client__
+
+On the OSSEC client, restart the client with the following command:
+
+```
+$OSSEC_HOME/bin/ossec-control restart
+```
+
+__Report__
+
+Once the rootcheck process has completed, view the report using the following command:
+
+```
+$OSSEC_HOME/rootcheck_control -i <id> -L
+```
