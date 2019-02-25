@@ -1,0 +1,280 @@
+# OSSEC NGINX Audit - (C) 2019 OSSEC Project
+#
+# Released under the same license as OSSEC.
+# More details at the LICENSE file included with OSSEC or online
+# at: https://github.com/ossec/ossec-hids/blob/master/LICENSE
+#
+# [Application name] [any or all] [reference]
+# type:<entry name>;
+#
+# Type can be:
+#             - f (for file or directory)
+#             - p (process running)
+#             - d (any file inside the directory)
+#
+# Additional values:
+# For the registry and for directories, use "->" to look for a specific entry and another
+# "->" to look for the value.
+# Also, use " -> r:^\. -> ..." to search all files in a directory
+# For files, use "->" to look for a specific value in the file.
+#
+# Values can be preceded by: =: (for equal) - default
+#                             r: (for ossec regexes)
+#                             >: (for strcmp greater)
+#                             <: (for strcmp  lower)
+# Multiple patterns can be specified by using " && " between them.
+# (All of them must match for it to return true).
+
+
+# CIS Checks for NGINX
+# Based on Draft CIS Benchmark for NGINX v1.0.0
+
+# Vars
+$NGINX_BIN=/sbin,/usr/local/sbin;
+$NGINX_CONF=/etc/nginx/nginx.conf;
+$NGINX_CONFD=/etc/nginx/conf.d;
+$NGINX_DEFAULT=/etc/nginx/conf.d/default.conf;
+$NGINX_HTML=/usr/share/nginx/html;
+$NGINX_SSL=/etc/nginx/ssl/;
+
+[Testing against the CIS Benchmark for NGINX v1.0.0] [any required] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_BIN -> r:^nginx$;
+
+###############################################
+# 1 Initial Setup
+###############################################
+
+# 1.1 Installation
+
+[{1.1.1} Installation - Ensure NGINX is installed (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_BIN -> !r:^nginx$;
+
+# 1.2 Configure Software Updates
+
+[{1.2.1} Configure Software Updates - Ensure package manager repositories are properly configured (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:/etc/yum.repos.d/epel.repo -> r:enabled\.+1;
+
+[{1.2.1} Configure Software Updates - Ensure the latest software package is installed (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+###############################################
+# 2 Basic Configuration
+###############################################
+
+# 2.1 Minimize NGINX Modules
+
+[{2.1.1} Minimize NGINX Modules - Ensure only required modules are installed (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+[{2.1.2} Minimize NGINX Modules - Ensure HTTP WebDAV module is not installed (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+[{2.1.3} Minimize NGINX Modules - Ensure modules with gzip functionality are disabled (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+[{2.1.4} Minimize NGINX Modules - Ensure the autoindex module is disabled (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+# 2.2 Account Security
+
+[{2.2.1} Account Security - Ensure that NGINX is run using a non-privileged, dedicated service account (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:^user\s+nginx;
+f:$NGINX_CONF -> r:^user\s+root;
+
+[{2.2.2} Account Security - Ensure the NGINX service account is locked (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:/etc/shadow -> r:nginx && !r::\p\p:;
+
+[{2.2.3} Account Security - Ensure the NGINX service account has an invalid shell (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:/etc/passwd -> r:nginx && !r:/sbin/nologin;
+
+# 2.3 Permissions and Ownership
+
+[{2.3.1} Permissions and Ownership - Ensure NGINX directories and files are owned by root (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+[{2.3.2} Permissions and Ownership - Ensure access to NGINX directories and files is restricted (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+[{2.3.3} Permissions and Ownership - Ensure the NGINX process ID (PID) file is secured (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+[{2.3.4} Permissions and Ownership - Ensure the core dump directory is secured (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+# 2.4 Network Configuration
+
+[{2.4.1} Network Configuration - Ensure NGINX only listens for network connections on authorized ports (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:listen\.+80|listen\.+443;
+
+[{2.4.2} Network Configuration - Ensure requests for unknown host names are rejected (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_DEFAULT -> !r:return\.+404;
+d:$NGINX_CONFD -> .conf$ -> !r:server_name;
+
+[{2.4.3} Network Configuration -n Ensure keepalive_timeout is 10 seconds or less, but not 0 (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONF -> !r:keepalive_timeout\.+10;
+
+[{2.4.4} Network Configuration - Ensure send_timeout is set to 10 seconds or less, but not 0 (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONF -> !r:send_timeout\.+10;
+
+# 2.5 Information Disclosure
+
+[{2.5.1} Information Disclosure - Ensure server_tokens directive is set to off (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:server_tokens\.+off;
+
+[{2.5.2} Information Disclosure - Ensure default error and index.html pages do not reference NGINX (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_HTML -> .html$ -> r:nginx;
+
+[{2.5.3} Information Disclosure - Ensure hidden file serving is disabled (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONFD -> r:location\s+~ && !r:deny\s+all;
+
+[{2.5.4} Information Disclosure - Ensure the NGINX reverse proxy does not enable information disclosure (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:proxy_hide_header X-Powered-By;
+f:$NGINX_CONF -> !r:proxy_hide_header Server Server;
+
+###############################################
+# 3 Logging
+###############################################
+
+[{3.1} Logging - Ensure detailed logging is enabled (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:log_format\.+main;
+
+[{3.2} Logging - Ensure access logging is enabled (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:access_log\.+main;
+
+[{3.3} Logging - Ensure error logging is enabled and set to the info logging level (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:^# && !r:error_log;
+
+[{3.4} Logging - Ensure log files are rotated (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:!/etc/logrotate.d/nginx;
+f:/etc/logrotate.d/nginx -> !r:weekly;
+f:/etc/logrotate.d/nginx -> !r:rotate\s+13;
+
+[{3.5} Logging - Ensure error logs are sent to a remote syslog server (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:error_log\.+server;
+
+[{3.6} Logging - Ensure access logs are sent to a remote syslog server (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:access_log\.+server;
+
+[{3.7} Logging - Ensure proxies pass source IP information (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:proxy_set_header X-Real-IP;
+f:$NGINX_CONF -> !r:proxy_set_header X-Forwarded-For;
+
+###############################################
+# 4 Encryption
+###############################################
+
+# 4.1 TLS/SSL Configuration
+
+[{4.1.1} TLS/SSL Configuration - Ensure HTTP is redirected to HTTPS (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:return\s+301\s+https;
+
+[{4.1.2} TLS/SSL Configuration - Ensure a trusted certificate and trust chain is installed (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_certificate;
+d:$NGINX_SSL -> !r:.pem$;
+d:$NGINX_SSL -> !r:.key$;
+
+[{4.1.3} TLS/SSL Configuration - Ensure private key permissions are restricted (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+# TBD
+
+[{4.1.4} TLS/SSL Configuration - Ensure only modern TLS protocols are used (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> r:TLSv1\s;
+d:$NGINX_CONFD -> .conf$ -> r:TLSv1.1\s;
+d:$NGINX_CONFD -> .conf$ -> !r:TLSv1.2;
+
+[{4.1.5} TLS/SSL Configuration - Disable weak ciphers (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_ciphers\.+\pEXP;
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_ciphers\.+\pNULL;
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_ciphers\.+\pADH;
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_ciphers\.+\pLOW;
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_ciphers\.+\pSSLv2;
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_ciphers\.+\pSSLv3;
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_ciphers\.+\pMD5;
+
+[{4.1.6} TLS/SSL Configuration - Ensure custom Diffie-Hellman parameters are used (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_dhparam;
+
+[{4.1.7} TLS/SSL Configuration - Ensure Online Certificate Status Protocol (OCSP) stapling is enabled (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_stapling\s+on;
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_stapling_verify\s+on;
+
+[{4.1.8} TLS/SSL Configuration - Ensure HTTP Strict Transport Security (HSTS) is enabled (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:Strict-Transport-Security\.+15768000;
+
+[{4.1.9} TLS/SSL Configuration - Ensure HTTP Public Key Pinning is enabled (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:Public-Key-Pins;
+
+[{4.1.10} TLS/SSL Configuration - Ensure upstream server traffic is authenticated with a client certificate (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:proxy_ssl_certificate;
+d:$NGINX_SSL -> !r:.pem$;
+d:$NGINX_SSL -> !r:.key$;
+
+[{4.1.11} TLS/SSL Configuration - Ensure the upstream traffic server certificate is trusted (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:proxy_ssl_trusted_certificate;
+d:$NGINX_CONFD -> .conf$ -> !r:proxy_ssl_verify\.+on;
+
+[{4.1.12} TLS/SSL Configuration - Ensure your domain is preloaded (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:includeSubDomains;
+
+[{4.1.13} TLS/SSL Configuration - Ensure session resumption is disabled to enable perfect forward security (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:ssl_session_tickets\.+off;
+
+[{4.1.14} TLS/SSL Configuration - Ensure HTTP/2.0 is used (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:listen\.+http2;
+
+###############################################
+# 5 Request Filtering and Restrictions
+###############################################
+
+# 5.1 Access Control
+
+[{5.1.1} Access Control - Ensure allow and deny filters limit access to specific IP addresses (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:allow;
+d:$NGINX_CONFD -> .conf$ -> !r:deny;
+
+[{5.1.2} Access Control - Ensure only whitelisted HTTP methods are allowed (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:request_method\.+GET;
+d:$NGINX_CONFD -> .conf$ -> !r:request_method\.+HEAD;
+d:$NGINX_CONFD -> .conf$ -> !r:request_method\.+POST;
+
+# 5.2 Request Limits
+
+[{5.2.1} Request Limits - Ensure timeout values for reading the client header and body are set correctly (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:client_body_timeout\.+10;
+f:$NGINX_CONF -> !r:client_header_timeout\.+10;
+
+[{5.2.2} Request Limits - Ensure the maximum request body size is set correctly (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:client_max_body_size\.+100K;
+
+[{5.2.3} Request Limits - Ensure the maximum buffer size for URIs is defined (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:large_client_header_buffers\.+2\.+1K;
+
+[{5.2.4} Request Limits - Ensure the number of connections per IP address is limited (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:limit_conn_zone\.+zone=limitperip\p10m;
+d:$NGINX_CONFD -> .conf$ -> !r:limit_conn\.+limitperip\.+10;
+
+[{5.2.5} Request Limits - Ensure rate limits by IP address are set (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+f:$NGINX_CONF -> !r:limit_req_zone\.+zone=ratelimit\p10m\.+rate=5r/s;
+d:$NGINX_CONFD -> .conf$ -> !r:limit_req\.+zone=ratelimit\.+burst=10\.+nodelay;
+
+# 5.3 Browser Security
+
+[{5.3.1} Browser Security - Ensure X-Frame-Options header is configured and enabled (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:X-Frame-Options\.+SAMEORIGIN;
+
+[{5.3.2} Browser Security - Ensure X-Content-Type-Options header is configured and enabled (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:X-Content-Type-Options\.+nosniff;
+
+[{5.3.3} Browser Security - Ensure the X-XSS-Protection Header is enabled and configured properly (Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:X-Xss-Protection\.+1\.+block;
+
+[{5.3.4} Browser Security - Ensure that Content Security Policy (CSP) is enabled and configured properly (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:Content-Security-Policy\.+default-src\.+self;
+
+[{5.3.5} Browser Security - Ensure the Referrer Policy is enabled and configured properly (Not Scored)] [any] [CIS NGINX Benchmark v1.0.0]
+d:$NGINX_CONFD -> .conf$ -> !r:Referrer-Policy\.+no-referrer;
+
+###############################################
+# 6 Mandatory Access Control
+###############################################
+
+# TBD
