@@ -350,7 +350,7 @@ $OSSEC_HOME/rootcheck_control -i <id> -L
 ```
 ## <a name="cis_nginx_rcl.txt"></a>cis_nginx_rcl.txt
 
-cis_nginx_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality. This file is based on the draft of the CIS NGINX Benchmark Server v1.0.0.
+cis_nginx_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality. This file is based on the draft of the CIS NGINX Benchmark v1.0.0.
 
 Some rules are not implemented.
 
