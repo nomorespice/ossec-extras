@@ -1,4 +1,4 @@
-# OSSEC Linux Audit - (C) 2018 OSSEC Project
+# OSSEC Linux Audit - (C) 2019 OSSEC Project
 #
 # Released under the same license as OSSEC.
 # More details at the LICENSE file included with OSSEC or online
@@ -51,27 +51,35 @@ f:/etc/redhat-release -> r:^OpenVZ && r:release 7;
 # 1.1.1 Disable unused filesystems
 
 [{1.1.1.1} Filesystem Configuration - Ensure mounting of cramfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+cramfs\.+/bin/true;
 
 [{1.1.1.2} Filesystem Configuration - Ensure mounting of freevxfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+freevxfs\.+/bin/true;
 
 [{1.1.1.3} Filesystem Configuration - Ensure mounting of jffs2 filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+jffs2\.+/bin/true;
 
 [{1.1.1.4} Filesystem Configuration - Ensure mounting of hfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+hfs\.+/bin/true;
 
 [{1.1.1.5} Filesystem Configuration - Ensure mounting of hfsplus filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+hfsplus\.+/bin/true;
 
 [{1.1.1.6} Filesystem Configuration - Ensure mounting of squashfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+squashfs\.+/bin/true;
 
 [{1.1.1.7} Filesystem Configuration - Ensure mounting of udf filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+udf\.+/bin/true;
 
 [{1.1.1.8} Filesystem Configuration - Ensure mounting of vfat filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+vfat\.+/bin/true;
 
 [{1.1.2} Filesystem Configuration - Ensure separate partition exists for /tmp (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
@@ -135,7 +143,7 @@ f:/etc/fstab -> !r:^# && r:/media && !r:noexec;
 # TODO
 
 [{1.1.22} Filesystem Configuration - Disable Automounting (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/systemd/system/multi-user.target.wants/autofs.service -> !r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/autofs.service;
 
 
 ##########################################
@@ -143,11 +151,11 @@ f:/etc/systemd/system/multi-user.target.wants/autofs.service -> !r:Exec;
 ##########################################
 
 [{1.2.1} Configure Software Updates - Ensure package manager repositories are configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-d:/etc/yum.repos.d -> !^redhat.repo$;
+d:/etc/yum.repos.d -> !^redhat.repo$ && !r:^enabled\.+1$;
 
 [{1.2.2} Configure Software Updates - Ensure gpgcheck is globally activated (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/yum.conf -> !r:^gpgcheck=1$;
-d:/etc/yum.repos.d -> r:^\. -> r:^gpgcheck\D+0$;
+f:/etc/yum.conf -> !r:^gpgcheck\.+1$;
+d:/etc/yum.repos.d -> r:^\. -> r:^gpgcheck\.+0$;
 
 [{1.2.3} Configure Software Updates - Ensure GPG keys are configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 d:/etc/pki/rpm-gpg -> !^RPM-GPG-KEY-redhat-release$;
@@ -206,7 +214,7 @@ d:/etc/sysconfig -> ^prelink$;
 
 [{1.6.1.1} Mandatory Access Control - Ensure SELinux is not disabled in bootloader configuration (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/grub2.cfg -> r:selinux=0;
-d:/etc/grub.d -> r:^\. -> r:^selinux\D+0$;
+d:/etc/grub.d -> r:^\. -> r:^selinux\.+0$;
 
 [{1.6.1.2} Mandatory Access Control - Ensure the SELinux state is enforcing (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/selinux/config -> !r:SELINUX=enforcing;
@@ -216,11 +224,11 @@ f:/etc/selinux/config -> !r:SELINUXTYPE=targeted;
 
 [{1.6.1.4} Mandatory Access Control - Ensure SETroubleshoot is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 d:$rc_dirs -> ^S\d\dsetroubleshoot$;
-f:/usr/share/dbus-1/services/sealert.service -> r:Exec=/usr/bin/sealert;
+f:/usr/share/dbus-1/services/sealert.service -> r:^Exec=/usr/bin/sealert;
 
 [{1.6.1.5} Mandatory Access Control - Ensure the MCS Translation Service (mcstrans) is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 d:$rc_dirs -> ^S\d\dmctrans$;
-f:/usr/lib/systemd/system/mcstransd.service -> r:ExecStart=/usr/sbin/mcstransd;
+f:/usr/lib/systemd/system/mcstransd.service -> r:^ExecStart=/usr/sbin/mcstransd;
 
 [{1.6.2} Mandatory Access Control - Ensure SELinux is installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/selinux/config -> !r:SELINUX=enforcing;
@@ -302,8 +310,7 @@ f:/etc/xinetd.d/time-stream -> !r:^# && r:disable && r:no;
 f:/etc/xinetd.d/tftp -> !r:^# && r:disable && r:no;
 
 [{2.1.7} Services - Ensure xinetd is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-#d:/etc/systemd/system/multi-user.target.wants -> ^xinetd\.service$;
-f:/usr/lib/systemd/system/xinetd.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/xinetd.service;
 
 
 ###############################################
@@ -313,7 +320,8 @@ f:/usr/lib/systemd/system/xinetd.service -> r:Exec;
 # 2.2.1 Time Synchronization
 
 [{2.2.1.1} Special Purpose Services - Ensure time synchronization is in use (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/ntpd.service -> !r:Exec;
+f:!/etc/systemd/system/multi-user.target.wants/ntpd.service;
+p:!ntpd;
 
 [{2.2.1.2} Special Purpose Services - Ensure ntp is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/ntp.conf -> !r:^restrict -4 default nomodify notrap nopeer noquery;
@@ -333,46 +341,56 @@ p:gdm-x-session;
 p:avahi-daemon;
 
 [{2.2.4} Special Purpose Services - Ensure CUPS is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/cups.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/cups.service;
+p:cups;
 
 [{2.2.5} Special Purpose Services - Ensure DHCP Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/dhcpd.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/dhcpd.service;
+p:dhcpd;
 
 [{2.2.6} Special Purpose Services - Ensure LDAP server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/slapd.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/slapd.service;
+p:slapd;
 
 [{2.2.7} Special Purpose Services - Ensure NFS and RPC are not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/nfs.service -> r:Exec;
-f:/usr/lib/systemd/system/nfslock.service -> r:Exec;
-f:/usr/lib/systemd/system/rpcbind.service -> r:Exec;
+f:/usr/lib/systemd/system/nfs.service -> r:^ExecStart;
+p:nfsd;
+f:/usr/lib/systemd/system/nfslock.service -> r:^ExecStart;
+f:/usr/lib/systemd/system/rpcbind.service -> r:^ExecStart;
 
 [{2.2.8} Special Purpose Services - Ensure DNS Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/named.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/named.service;
+p:named;
 
 [{2.2.9} Special Purpose Services - Ensure FTP Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/vsftpd.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/vsftpd.service;
+p:vsftpd;
 
 [{2.2.10} Special Purpose Services - Ensure HTTP server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/httpd.service -> r:Exec;
-f:/usr/lib/systemd/system/nginx.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/httpd.service;
+p:httpd;
+f:/etc/systemd/system/multi-user.target.wants/nginx.service;
+p:nginx;
 
 [{2.2.11} Special Purpose Services - Ensure IMAP and POP3 server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/dovecot.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/dovecot.service;
 
 [{2.2.12} Special Purpose Services - Ensure Samba is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/smb.service -> r:Exec;
+f:/usr/lib/systemd/system/smb.service -> r:^ExecStart;
 
 [{2.2.13} Special Purpose Services - Ensure HTTP Proxy Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/squid.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/squid.service;
+p:squid;
 
 [{2.2.14} Special Purpose Services - Ensure SNMP Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/snmpd.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/snmpd.service;
+p:snmpd;
 
 [{2.2.15} Special Purpose Services - Ensure mail transfer agent is configured for local-only mode (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/postfix/main.cf -> !r:^inet_interfaces = localhost$;
+f:/etc/postfix/main.cf -> !r:^inet_interfaces\.+localhost$;
 
 [{2.2.16} Special Purpose Services - Ensure NIS Server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/ypserv.service -> r:Exec;
+f:/usr/lib/systemd/system/ypserv.service -> r:^ExecStart;
 
 [{2.2.17} Special Purpose Services - Ensure rsh server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/usr/lib/systemd/system/rsh.socket -> r:^Listen;
@@ -380,7 +398,7 @@ f:/usr/lib/systemd/system/rlogin.socket -> r:^Listen;
 f:/usr/lib/systemd/system/rexec.socket -> r:^Listen;
 
 [{2.2.18} Special Purpose Services - Ensure talk server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/ntalk.service -> r:Exec;
+f:/usr/lib/systemd/system/ntalk.service -> r:^ExecStart;
 
 [{2.2.19} Special Purpose Services - Ensure telnet server is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/usr/lib/systemd/system/telnet.socket -> r:^Listen;
@@ -389,7 +407,7 @@ f:/usr/lib/systemd/system/telnet.socket -> r:^Listen;
 f:/usr/lib/systemd/system/tftp.socket -> r:^Listen;
 
 [{2.2.21} Special Purpose Services - Ensure rsync service is not enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/systemd/system/multi-user.target.wants/rsyncd.service -> r:Exec;
+f:/etc/systemd/system/multi-user.target.wants/rsyncd.service;
 
 
 ###############################################
@@ -397,7 +415,7 @@ f:/etc/systemd/system/multi-user.target.wants/rsyncd.service -> r:Exec;
 ###############################################
 
 [{2.3.1} Service Clients - Ensure NIS Client is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/ypbind.service -> r:Exec;
+f:/usr/lib/systemd/system/ypbind.service -> r:^ExecStart;
 
 [{2.3.2} Service Clients - Ensure rsh client is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 d:/bin -> ^rsh$;
@@ -413,7 +431,6 @@ d:/usr/bin -> ^telnet$;
 
 [{2.3.5} Service Clients - Ensure LDAP client is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 d:/etc/pam.d -> r:^\. -> r:ldap;
-#d:/etc/openldap -> ^ldap.conf$;
 
 
 ###############################################
@@ -502,15 +519,19 @@ d:/etc -> !^hosts.deny$;
 ###############################################
 
 [{3.5.1} Uncommon Network Protocols - Ensure DCCP is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+dccp\.+/bin/true;
 
 [{3.5.2} Uncommon Network Protocols - Ensure SCTP is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+sctp\.+/bin/true;
 
 [{3.5.3} Uncommon Network Protocols - Ensure RDS is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+rds\.+/bin/true;
 
 [{3.5.4} Uncommon Network Protocols - Ensure TIPC is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+f:!/etc/modprobe.d/CIS.conf;
 f:/etc/modprobe.d/CIS.conf -> !r:^install\.+tipc\.+/bin/true;
 
 
@@ -519,20 +540,20 @@ f:/etc/modprobe.d/CIS.conf -> !r:^install\.+tipc\.+/bin/true;
 ###############################################
 
 [{3.6.1} Firewall Configuration - Ensure iptables is installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/iptables.service -> !r:Exec;
+f:/usr/lib/systemd/system/iptables.service -> !r:^ExecStart;
 
 [{3.6.2} Firewall Configuration - Ensure default deny firewall policy (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/sysconfig/iptables -> !r:INPUT DROP;
-f:/etc/sysconfig/iptables -> !r:OUTPUT DROP;
-f:/etc/sysconfig/iptables -> !r:FORWARD DROP;
+f:/etc/sysconfig/iptables -> !r:INPUT\sDROP;
+f:/etc/sysconfig/iptables -> !r:OUTPUT\sDROP;
+f:/etc/sysconfig/iptables -> !r:FORWARD\sDROP;
 
 [{3.6.3} Firewall Configuration - Ensure loopback traffic is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/sysconfig/iptables -> !r:INPUT -i lo -j ACCEPT;
-f:/etc/sysconfig/iptables -> !r:OUTPUT -o lo -j ACCEPT;
+f:/etc/sysconfig/iptables -> !r:INPUT\s-i\slo\s-j\sACCEPT;
+f:/etc/sysconfig/iptables -> !r:OUTPUT\s-o\slo\s-j\sACCEPT;
 
 [{3.6.4} Firewall Configuration - Ensure outbound and established connections are configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/sysconfig/iptables -> !r:INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT;
-f:/etc/sysconfig/iptables -> !r:OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT;
+f:/etc/sysconfig/iptables -> !r:INPUT\.+RELATED,ESTABLISHED\.+ACCEPT;
+f:/etc/sysconfig/iptables -> !r:OUTPUT\.+RELATED,ESTABLISHED\.+ACCEPT;
 
 [{3.6.5} Firewall Configuration - Ensure firewall rules exist for all open ports (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 # TODO
@@ -632,12 +653,12 @@ f:/etc/audit/audit.rules -> !r:modules;
 # 4.2.1 Configure rsyslog
 
 [{4.2.1.1} Configure Logging - Ensure rsyslog Service is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/rsyslog.service -> !r:Exec;
+f:!/etc/systemd/system/multi-user.target.wants/rsyslog.service;
+p:!rsyslogd;
 
 [{4.2.1.2} Configure Logging - Ensure logging is configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/rsyslog.conf -> !r:imuxsock;
 f:/etc/rsyslog.conf -> !r:imjournal;
-#d:/etc -> !^rsyslog.conf$;
 
 [{4.2.1.3} Configure Logging - Ensure rsyslog default file permissions configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 # TODO
@@ -651,11 +672,10 @@ f:/etc/rsyslog.conf -> !r:\@\@;
 # 4.2.2 Configure syslog-ng
 
 [{4.2.2.1} Configure Logging - Ensure syslog-ng service is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/syslog-ng.service -> !r:Exec;
+f:!/etc/systemd/system/multi-user.target.wants/syslog-ng.service;
 
 [{4.2.2.2} Configure Logging - Ensure logging is configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/syslog-ng/syslog-ng.conf -> !r:options;
-#d:/etc/syslog-ng -> ^syslog-ng.conf;
 
 [{4.2.2.3} Configure Logging - Ensure syslog-ng default file permissions configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 # TODO
@@ -667,14 +687,13 @@ f:/etc/syslog-ng/syslog-ng.conf -> !r:^destination logserver;
 # TODO
 
 [{4.2.3} Configure Logging - Ensure rsyslog or syslog-ng is installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/rsyslog.service -> !r:Exec;
-f:/usr/lib/systemd/system/syslog-ng.service -> !r:Exec;
+p:!rsyslogd;
 
 [{4.2.4} Configure Logging - Ensure permissions on all logfiles are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 # TODO
 
 [{4.3} Configure Logging - Ensure logrotate is configured (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/logrotate.d/syslog -> !r:/var/log/messages;
+f:/etc/logrotate.d/syslog -> !r:^/var/log/messages;
 d:/etc -> !^logrotate.conf$;
 
 
@@ -688,7 +707,7 @@ d:/etc -> !^logrotate.conf$;
 ###############################################
 
 [{5.1.1} Configure cron - Ensure cron daemon is enabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/usr/lib/systemd/system/crond.service -> !r:Exec;
+f:!/etc/systemd/system/multi-user.target.wants/crond.service;
 
 [{5.1.2} Configure cron - Ensure permissions on /etc/crontab are configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 # TODO
@@ -761,10 +780,10 @@ f:/etc/ssh/sshd_config -> !r:^# && r:ClientAliveCountMax && !r:0\s*$;
 f:/etc/ssh/sshd_config -> !r:^# && r:LoginGraceTime && !r:60\s*$;
 
 [{5.2.14} SSH Server Configuration - Ensure SSH access is limited (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/ssh/sshd_config -> r:^AllowGroups\s*$;
+f:/etc/ssh/sshd_config -> r:^AllowGroups;
 
 [{5.2.15} SSH Server Configuration - Ensure SSH warning banner is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/ssh/sshd_config -> r:^Banner \s*$;
+f:/etc/ssh/sshd_config -> !r:^Banner;
 
 
 ###############################################
@@ -813,22 +832,21 @@ f:/etc/login.defs -> r:^PASS_WARN_AGE && !r:7\s*$;
 # TODO
 
 [{5.4.2} User Accounts and Environment - Ensure system accounts are non-login (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/passwd -> !r:^bin: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^daemon: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^adm: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^lp: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^mail: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^operator: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^games: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^ftp: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^nobody: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^systemd: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^dbus: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^polkit: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^ntp: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^tss: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^sshd: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
-f:/etc/passwd -> !r:^postfix: && r:^\w+:\w+:\w+:\w+:\w+:\w+:/sbin/nologin;
+f:/etc/passwd -> r:^bin && !r:/sbin/nologin;
+f:/etc/passwd -> r:^daemon && !r:/sbin/nologin;
+f:/etc/passwd -> r:^adm && !r:/sbin/nologin;
+f:/etc/passwd -> r:^lp && !r:/sbin/nologin;
+f:/etc/passwd -> r:^mail && !r:/sbin/nologin;
+f:/etc/passwd -> r:^operator && !r:/sbin/nologin;
+f:/etc/passwd -> r:^games && !r:/sbin/nologin;
+f:/etc/passwd -> r:^ftp && !r:/sbin/nologin;
+f:/etc/passwd -> r:^nobody && !r:/sbin/nologin;
+f:/etc/passwd -> r:^systemd && !r:/sbin/nologin;
+f:/etc/passwd -> r:^dbus && !r:/sbin/nologin;
+f:/etc/passwd -> r:^polkit && !r:/sbin/nologin;
+f:/etc/passwd -> r:^ntp && !r:/sbin/nologin;
+f:/etc/passwd -> r:^sshd && !r:/sbin/nologin;
+f:/etc/passwd -> r:^postfix && !r:/sbin/nologin;
 
 [{5.4.3} User Accounts and Environment - Ensure default group for the root account is GID 0 (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/passwd -> !r:^root: && r:^\w+:\w+:0:0:;
@@ -901,16 +919,16 @@ f:/etc/group -> r:^wheel\s*$;
 ###############################################
 
 [{6.2.1} User and Group Settings - Ensure password fields are not empty (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-# TODO
+f:/etc/shadow -> r:^\w+::;
 
 [{6.2.2} User and Group Settings - Ensure no legacy "+" entries exist in /etc/passwd (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-# TODO
+f:/etc/passwd -> r:^\+:;
 
 [{6.2.3} User and Group Settings - Ensure no legacy "+" entries exist in /etc/shadow (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-# TODO
+f:/etc/shadow -> r:^\+:;
 
 [{6.2.4} User and Group Settings - Ensure no legacy "+" entries exist in /etc/group (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-# TODO
+f:/etc/group -> r:^\+:;
 
 [{6.2.5} User and Group Settings - Ensure root is the only UID 0 account (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/passwd -> !r:^# && !r:^root: && r:^\w+:\w+:0:;
@@ -936,7 +954,7 @@ f:/etc/passwd -> !r:^# && !r:^root: && r:^\w+:\w+:0:;
 [{6.2.12} User and Group Settings - Ensure no users have .netrc files (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 # TODO
 
-[{6.2.13} User and Group Settings - Ensure users' .netrc Files are not group or world accessible (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
+[{6.2.13} User and Group Settings - Ensure users .netrc Files are not group or world accessible (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 # TODO
 
 [{6.2.14} User and Group Settings - Ensure no users have .rhosts files (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
