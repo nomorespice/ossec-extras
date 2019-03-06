@@ -1,0 +1,381 @@
+# OSSEC Apache HTTPD Audit - (C) 2019 OSSEC Project
+#
+# More details at the LICENSE file included with OSSEC or online
+# at: https://github.com/nomorespice/ossec-extras/blob/master/LICENSE
+#
+# [Application name] [any or all] [reference]
+# type:<entry name>;
+#
+# Type can be:
+#             - f (for file or directory)
+#             - p (process running)
+#             - d (any file inside the directory)
+#
+# Additional values:
+# For the registry and for directories, use "->" to look for a specific entry and another
+# "->" to look for the value.
+# Also, use " -> r:^\. -> ..." to search all files in a directory
+# For files, use "->" to look for a specific value in the file.
+#
+# Values can be preceded by: =: (for equal) - default
+#                             r: (for ossec regexes)
+#                             >: (for strcmp greater)
+#                             <: (for strcmp  lower)
+# Multiple patterns can be specified by using " && " between them.
+# (All of them must match for it to return true).
+
+
+# CIS Checks for Apache HTTPD
+# Based on CIS Apache HTTP Server 2.4 Benchmark v1.4.0
+
+# Vars
+$HTTPD_BIN=/sbin;
+$HTTPD_CONF=/etc/httpd/conf/httpd.conf;
+$HTTPD_CONFD=/etc/httpd/conf.d;
+$HTTPD_MOD=/etc/httpd/conf.modules.d;
+$HTTPD_SSL=/etc/httpd/conf.d/ssl.conf;
+$HTTPD_VHOST=/etc/httpd/conf.d/ssl.conf;
+
+[Testing against the CIS Apache HTTP Server 2.4 Benchmark v1.4.0] [any required] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_BIN -> r:^httpd$;
+
+###############################################
+# 1 Planning and Installation
+###############################################
+
+[{1.1} Planning and Installation - Pre-Installation Planning Checklist (Not Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{1.2} Planning and Installation - Do Not Install a Multi-Use System (Not Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+p:dhcpd;
+p:mysqld;
+p:named;
+p:nginx;
+p:rpcbind;
+p:squid;
+p:xinetd;
+
+[{1.3} Planning and Installation - Installing Apache (Not Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_BIN -> !r:^httpd$;
+
+###############################################
+# 2 Minimize Apache Modules
+###############################################
+
+[{2.1} Minimize Apache Modules - Enable Only Necessary Authentication and Authorization Modules (Not Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+auth;
+d:$HTTPD_MOD -> .conf$ -> r:ldap;
+
+[{2.2} Minimize Apache Modules - Enable the Log Config Module (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> 00-base.conf$ -> !r:^LoadModule\.+log_config_module;
+
+[{2.3} Minimize Apache Modules - Disable WebDAV Modules (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+dav;
+
+[{2.4} Minimize Apache Modules - Disable Status Module (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+status_module;
+
+[{2.5} Minimize Apache Modules - Disable Autoindex Module (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+autoindex_module;
+
+[{2.6} Minimize Apache Modules - Disable Proxy Modules (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+proxy;
+
+[{2.7} Minimize Apache Modules - Disable User Directories Modules (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+userdir_module;
+
+[{2.8} Minimize Apache Modules - Disable Info Module (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+info_module;
+
+###############################################
+# 3 Principles, Permissions, and Ownership
+###############################################
+
+[{3.1} Principles, Permissions, and Ownership - Run the Apache Web Server as a non-root user (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^User\.+apache$;
+f:$HTTPD_CONF -> !r:^Group\.+apache$;
+
+[{3.2} Principles, Permissions, and Ownership - Give the Apache User Account an Invalid Shell (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:/etc/passwd -> r:apache && !r:/sbin/nologin;
+
+[{3.3} Principles, Permissions, and Ownership - Lock the Apache User Account (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:/etc/shadow -> r:apache && !r::\p\p:;
+
+[{3.4} Principles, Permissions, and Ownership - Set Ownership on Apache Directories and Files (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{3.5} Principles, Permissions, and Ownership - Set Group Id on Apache Directories and Files (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{3.6} Principles, Permissions, and Ownership - Restrict Other Write Access on Apache Directories and Files (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{3.7} Principles, Permissions, and Ownership - Secure Core Dump Directory (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{3.8} Principles, Permissions, and Ownership - Secure the Lock File (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{3.9} Principles, Permissions, and Ownership - Secure the Pid File (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{3.10} Principles, Permissions, and Ownership - Secure the ScoreBoard File (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{3.11} Principles, Permissions, and Ownership - Restrict Group Write Access for the Apache Directories and Files (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{3.12} Principles, Permissions, and Ownership - Restrict Group Write Access for the Document Root Directories and Files (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+###############################################
+# 4 Apache Access Control
+###############################################
+
+[{4.1} Apache Access Control - Deny Access to OS Root Directory (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:Require\.+all\.+denied;
+
+[{4.2} Apache Access Control - Allow Appropriate Access to Web Content (Not Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{4.3} Apache Access Control - Restrict Override for the OS Root Directory (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:AllowOverride\.+None;
+
+[{4.4} Apache Access Control - Restrict Override for All Directories (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:AllowOverride\.+None;
+
+###############################################
+# 5 Minimize Features, Content and Options
+###############################################
+
+[{5.1} Minimize Features, Content and Options - Restrict Options for the OS Root Directory (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> r:Options\.+FollowSymLinks;
+f:$HTTPD_CONF -> r:Options\.+Includes;
+f:$HTTPD_CONF -> !r:Options\.+None;
+
+[{5.2} Minimize Features, Content and Options - Restrict Options for the Web Root Directory (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> r:Options\.+FollowSymLinks;
+f:$HTTPD_CONF -> r:Options\.+Includes;
+f:$HTTPD_CONF -> !r:Options\.+None;
+
+[{5.3} Minimize Features, Content and Options - Minimize Options for Other Directories (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> r:Options\.+Includes;
+d:$HTTPD_CONFD -> .conf$ -> r:Options\.+Includes;
+
+[{5.4} Minimize Features, Content and Options - Remove Default HTML Content (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> r:server-status;
+f:$HTTPD_CONF -> r:server-info;
+f:$HTTPD_CONF -> r:perl-status;
+d:$HTTPD_CONFD -> .conf$ -> r:LocationMatch\.+/p/p//p/p/p;
+d:$HTTPD_CONFD -> .conf$ -> r:server-status;
+d:$HTTPD_CONFD -> .conf$ -> r:server-info;
+d:$HTTPD_CONFD -> .conf$ -> r:perl-status;
+
+[{5.5} Minimize Features, Content and Options - Remove Default CGI Content printenv (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> r:printenv;
+d:$HTTPD_CONFD -> .conf$ -> r:printenv;
+
+[{5.6} Minimize Features, Content and Options - Remove Default CGI Content test-cgi (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> r:test-cgi;
+d:$HTTPD_CONFD -> .conf$ -> r:test-cgi;
+
+[{5.7} Minimize Features, Content and Options - Limit HTTP Request Methods (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:LimitExcept\.+GET\.+POST\.+OPTIONS;
+
+[{5.8} Minimize Features, Content and Options - Disable HTTP TRACE Method (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:TraceEnable\.+off;
+
+[{5.9} Minimize Features, Content and Options - Restrict HTTP Protocol Versions (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> 00-base.conf$ -> !r:^LoadModule\.+rewrite_module;
+f:$HTTPD_CONF -> !r:^RewriteEngine\.+On;
+f:$HTTPD_CONF -> !r:^RewriteCond\.+THE_REQUEST\.+HTTP;
+f:$HTTPD_CONF -> !r:^RewriteRule\.+.\p;
+d:$HTTPD_VHOST -> !r:RewriteEngine\.+On;
+d:$HTTPD_VHOST -> !r:RewriteOptions\.+Inherit;
+
+[{5.10} Minimize Features, Content and Options - Restrict Access to .ht* files (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:FilesMatch\.+.ht\p;
+
+[{5.11} Minimize Features, Content and Options - Restrict File Extensions (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:FilesMatch\.+.\p\p;
+
+[{5.12} Minimize Features, Content and Options - Deny IP Address Based Requests (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> 00-base.conf$ -> !r:^LoadModule\.+rewrite_module;
+f:$HTTPD_CONF -> !r:^RewriteEngine\.+On;
+f:$HTTPD_CONF -> !r:^RewriteCond\.+HTTP_HOST\.+NC;
+f:$HTTPD_CONF -> !r:^RewriteCond\.+REQUEST_URI\.+error;
+f:$HTTPD_CONF -> !r:^RewriteRule\.+\p.\p;
+
+[{5.13} Minimize Features, Content and Options - Restrict Listen Directive (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:Listen\.+\p80$;
+
+[{5.14} Minimize Features, Content and Options - Restrict Browser Frame Options (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:Header\.+always\.+append\.+X-Frame-Options\.+SAMEORIGIN;
+
+###############################################
+# 6 Operations - Logging, Monitoring and Maintenance
+###############################################
+
+[{6.1} Operations - Logging, Monitoring and Maintenance - Configure the Error Log (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^LogLevel\.+info;
+f:$HTTPD_CONF -> !r:^ErrorLog;
+
+[{6.2} Operations - Logging, Monitoring and Maintenance - Configure a Syslog Facility for Error Logging (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:ErrorLog\.+\psyslog\p;
+
+[{6.3} Operations - Logging, Monitoring and Maintenance - Configure the Access Log (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:LogFormat\.+combined$;
+f:$HTTPD_CONF -> !r:CustomLog\.+combined$;
+
+[{6.4} Operations - Logging, Monitoring and Maintenance - Log Storage and Rotation (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:!/etc/logrotate.d/httpd;
+f:/etc/logrotate.d/httpd -> !r:weekly;
+f:/etc/logrotate.d/httpd -> !r:rotate\s+13;
+
+[{6.5} Operations - Logging, Monitoring and Maintenance - Apply Applicable Patches (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{6.6} Operations - Logging, Monitoring and Maintenance - Install and Enable ModSecurity (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:!/etc/httpd/conf.modules.d/10-mod_security.conf;
+d:$HTTPD_MOD -> 10-mod_security.conf$ -> !r:^LoadModule\.+security2_module;
+f:!/etc/httpd/conf.d/mod_security.conf;
+f:/etc/http/conf.d/mod_security.conf -> !r:SecRuleEngine\.+On;
+
+[{6.7} Operations - Logging, Monitoring and Maintenance - Install and Enable OWASP ModSecurity Core Rule Set (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:/etc/httpd/conf.d/mod_security.conf -> !r:^# && !r:IncludeOptional\.+modsecurity.d/activated_rules;
+
+###############################################
+# 7 SSL/TLS Configuration
+###############################################
+
+[{7.1} SSL/TLS Configuration - Install mod_ssl and/or mod_nss (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> 00-ssl.conf$ -> !r:^LoadModule\.+ssl_module;
+f:$HTTPD_SSL -> !r:^SSLEngine\.+On$;
+ 
+[{7.2} SSL/TLS Configuration - Install a Valid Trusted Certificate (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{7.3} SSL/TLS Configuration - Protect the Server's Private Key (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{7.4} SSL/TLS Configuration - Disable the SSL v3.0 Protocol (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_SSL -> !r:^SSLProtocol\.+TLSv1.1\.+TLSv1.2$;
+
+[{7.5} SSL/TLS Configuration - Restrict Weak SSL/TLS Ciphers (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_SSL -> !r:^SSLHonorCipherOrder\.+On$;
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\pEXP;
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\pNULL;
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\pLOW;
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\pSSLv2;
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\pMD5;
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\pRC4;
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\paNULL;
+
+[{7.6} SSL/TLS Configuration - Disable SSL Insecure Renegotiation (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_SSL -> !r:SSLInsecureRenegotiation\.+off;
+
+[{7.7} SSL/TLS Configuration - Ensure SSL Compression is not Enabled (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_SSL -> !r:SSLCompression\.+off;
+
+[{7.8} SSL/TLS Configuration - Restrict Medium Strength SSL/TLS Ciphers (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\p3DES;
+f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\pIDEA;
+
+[{7.9} SSL/TLS Configuration - Disable the TLS v1.0 Protocol (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_SSL -> !r:^SSLProtocol\.+TLSv1.1\.+TLSv1.2$;
+
+[{7.10} SSL/TLS Configuration - Enable OCSP Stapling (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_SSL -> !r:^SSLUseStapling\.+On;
+f:$HTTPD_SSL -> !r:^SSLStaplingCache;
+
+[{7.11} SSL/TLS Configuration - Enable HTTP Strict Transport Security (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_SSL -> !r:^Header\.+always\.+set\.+Strict-Transport-Security\.+\pmax-age\p600";
+
+###############################################
+# 8 Information Leakage
+###############################################
+
+[{8.1} Information Leakage - Set ServerToken to 'Prod' (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^ServerTokens\.+Prod;
+
+[{8.2} Information Leakage - Set ServerSignature to 'Off' (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^ServerSignature\.+Off;
+
+[{8.3} Information Leakage - Information Leakage via Default Apache Content (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:/etc/httpd/conf.d/autoindex.conf;
+f:/etc/httpd/conf.d/autoinex.conf -> !r:^# && r:Alias\.+/icons;
+
+[{8.4} Information Leakage - Information Leakage via ETag (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:FileETag\.+None;
+d:$HTTPD_CONFD -> .conf$ -> r:FileETag;
+
+###############################################
+# 9 Denial of Service Mitigations
+###############################################
+
+[{9.1} Denial of Service Mitigations - Set TimeOut to 10 or less (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^TimeOut\.+10;
+
+[{9.2} Denial of Service Mitigations - Set the KeepAlive directive to On (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^KeepAlive\.+On;
+# TBD
+
+[{9.3} Denial of Service Mitigations - Set MaxKeepAliveRequests to 100 or greater (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^MaxKeepAliveRequests\.+100;
+
+[{9.4} Denial of Service Mitigations - Set KeepAliveTimeout Low to Mitigate Denial of Service (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^KeepAliveTimeout\.+15;
+
+[{9.5} Denial of Service Mitigations - Set Timeout Limits for Request Headers (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> 00-base.conf$ -> !r:^LoadModule\.+reqtimeout_module;
+f:$HTTPD_CONF -> !r:^RequestReadTimeout\.+header;
+
+[{9.6} Denial of Service Mitigations - Set Timeout Limits for the Request Body (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+d:$HTTPD_MOD -> 00-base.conf$ -> !r:^LoadModule\.+reqtimeout_module;
+f:$HTTPD_CONF -> !r:^RequestReadTimeout\.+body;
+
+###############################################
+# 10 Request Limits
+###############################################
+
+[{10.1} Request Limits - Set the LimitRequestLine directive to 512 or less (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^LimitRequestline\.+512;
+
+[{10.2} Request Limits - Set the LimitRequestFields directive to 100 or less (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^LimitRequestFields\.+100;
+
+[{10.3} Request Limits - Set the LimitRequestFieldsize directive to 1024 or less (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^LimitRequestFieldsize\.+1024;
+
+[{10.4} Request Limits - Set the LimitRequestBody directive to 102400 or less (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:$HTTPD_CONF -> !r:^LimitRequestBody\.+102400;
+
+###############################################
+# 11 Enable SELinux to Restrict Apache Processes
+###############################################
+
+[{11.1} Enable SELinux to Restrict Apache Processes - Enable SELinux in Enforcing Mode (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+f:/etc/selinux/config -> !r:SELINUX=enforcing;
+f:/etc/selinux/config -> !r:SELINUXTYPE=targeted;
+
+[{11.2} Enable SELinux to Restrict Apache Processes - Run Apache Processes in the httpd_t Confined Context (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{11.3} Enable SELinux to Restrict Apache Processes - Ensure the httpd_t Type is Not in Permissive Mode (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{11.4} Enable SELinux to Restrict Apache Processes - Ensure Only the Necessary SELinux Booleans are Enabled (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+###############################################
+# 12 Enable AppArmor to Restrict Apache Processes
+###############################################
+
+[{12.1} Enable AppArmor to Restrict Apache Processes - Enable the AppArmor Framework (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{12.2} Enable AppArmor to Restrict Apache Processes - Customize the Apache AppArmor Profile (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
+
+[{12.2} Enable AppArmor to Restrict Apache Processes - Ensure Apache AppArmor Profile is in Enforce Mode (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
+# TBD
