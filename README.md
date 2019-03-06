@@ -4,11 +4,13 @@
   * [nagios-discord.sh](#nagios-discord.sh)
   * [ossec-discord.sh](#ossec-discord.sh)
   * [ossec-nagios.sh](#ossec-nagios.sh)
+  * [cis_bind_dns_rcl.txt](#cis_bind_dns_rcl.txt)
   * [cis_debian_linux_rcl.txt](#cis_debian_linux_rcl.txt)
+  * [cis_httpd_rcl.txt](#cis_httpd_rcl.txt)
+  * [cis_nginx_rcl.txt](#cis_nginx_rcl.txt)
   * [cis_rhel7_linux_rcl.txt](#cis_rhel7_linux_rcl.txt)
   * [cis_rhel8_linux_rcl.txt](#cis_rhel8_linux_rcl.txt)
-  * [cis_bind_dns_rcl.txt](#cis_bind_dns_rcl.txt)
-  * [cis_nginx_rcl.txt](#cis_nginx_rcl.txt)
+    
   
 ## <a name="nagios-discord.sh"></a>nagios-discord.sh
 
@@ -125,6 +127,49 @@ __Example ossec.conf__
     <level>7</level>
   </active-response>
 ```
+## <a name="cis_bind_dns_rcl.txt"></a>cis_bind_dns_rcl.txt
+
+cis_bind_dns_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality. This file has been updated for the latest version of the CIS Benchmark ISC BIND DNS Server 9.9 v3.0.1.
+
+Some rules are not implemented.
+
+This has been tested using OSSEC version 2.9.3, Red Hat 7 and BIND version 9.12.3-P1.
+
+__Usage__
+
+On the OSSEC client (on your DNS server), place cis_bind_dns_rcl.txt into your $OSSEC_HOME/etc/shared directory. Ensure your $OSSEC_HOME/etc/ossec.conf file is configured to use cis_bind_dns_rcl.txt.
+
+__Example ossec.conf__
+
+```
+  <rootcheck>
+    <system_audit>/var/ossec/etc/shared/cis_bind_dns_rcl.txt</system_audit>
+  </rootcheck>
+```
+
+__Reset the rootcheck database__
+
+On the OSSEC server, reset (clear) the rootcheck database with the following command:
+
+```
+$OSSEC_HOME/bin/rootcheck_control -u <id>
+```
+
+__Restart OSSEC client__
+
+On the OSSEC client, restart the client with the following command:
+
+```
+$OSSEC_HOME/bin/ossec-control restart
+```
+
+__Report__
+
+Once the rootcheck process has completed, view the report using the following command:
+
+```
+$OSSEC_HOME/rootcheck_control -i <id> -L
+```
 
 ## <a name="cis_debian_linux_rcl.txt"></a>cis_debian_linux_rcl.txt
 
@@ -189,6 +234,50 @@ System Audit: System Audit: {1.1.1.1} Filesystem Configuration - Ensure mounting
 
 System Audit: System Audit: {1.1.3} Filesystem Configuration - Ensure nodev option set on /tmp partition (Scored). File: /etc/fstab. Reference: CIS Debian Benchmark v1.1.0 .
 ```
+## <a name="cis_nginx_rcl.txt"></a>cis_nginx_rcl.txt
+
+cis_nginx_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality. This file is based on the draft of the CIS NGINX Benchmark v1.0.0.
+
+Some rules are not implemented.
+
+This has been tested using OSSEC version 3.2.0, Red Hat 7 and NGINX version 1.10.1.
+
+__Usage__
+
+On the OSSEC client (on your DNS server), place cis_nginx_rcl.txt into your $OSSEC_HOME/etc/shared directory. Ensure your $OSSEC_HOME/etc/ossec.conf file is configured to use cis_nginx_rcl.txt.
+
+__Example ossec.conf__
+
+```
+  <rootcheck>
+    <system_audit>/var/ossec/etc/shared/cis_nginx_rcl.txt</system_audit>
+  </rootcheck>
+```
+
+__Reset the rootcheck database__
+
+On the OSSEC server, reset (clear) the rootcheck database with the following command:
+
+```
+$OSSEC_HOME/bin/rootcheck_control -u <id>
+```
+
+__Restart OSSEC client__
+
+On the OSSEC client, restart the client with the following command:
+
+```
+$OSSEC_HOME/bin/ossec-control restart
+```
+
+__Report__
+
+Once the rootcheck process has completed, view the report using the following command:
+
+```
+$OSSEC_HOME/rootcheck_control -i <id> -L
+```
+
 
 ## <a name="cis_rhel7_linux_rcl.txt"></a>cis_rhel7_linux_rcl.txt
 
@@ -305,89 +394,4 @@ Once the rootcheck process has completed, view the report using the following co
 $OSSEC_HOME/rootcheck_control -i <id> -L
 ```
 
-## <a name="cis_bind_dns_rcl.txt"></a>cis_bind_dns_rcl.txt
 
-cis_bind_dns_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality. This file has been updated for the latest version of the CIS Benchmark ISC BIND DNS Server 9.9 v3.0.1.
-
-Some rules are not implemented.
-
-This has been tested using OSSEC version 2.9.3, Red Hat 7 and BIND version 9.12.3-P1.
-
-__Usage__
-
-On the OSSEC client (on your DNS server), place cis_bind_dns_rcl.txt into your $OSSEC_HOME/etc/shared directory. Ensure your $OSSEC_HOME/etc/ossec.conf file is configured to use cis_bind_dns_rcl.txt.
-
-__Example ossec.conf__
-
-```
-  <rootcheck>
-    <system_audit>/var/ossec/etc/shared/cis_bind_dns_rcl.txt</system_audit>
-  </rootcheck>
-```
-
-__Reset the rootcheck database__
-
-On the OSSEC server, reset (clear) the rootcheck database with the following command:
-
-```
-$OSSEC_HOME/bin/rootcheck_control -u <id>
-```
-
-__Restart OSSEC client__
-
-On the OSSEC client, restart the client with the following command:
-
-```
-$OSSEC_HOME/bin/ossec-control restart
-```
-
-__Report__
-
-Once the rootcheck process has completed, view the report using the following command:
-
-```
-$OSSEC_HOME/rootcheck_control -i <id> -L
-```
-## <a name="cis_nginx_rcl.txt"></a>cis_nginx_rcl.txt
-
-cis_nginx_rcl.txt is an optional part of the OSSEC system audit rootcheck functionality. This file is based on the draft of the CIS NGINX Benchmark v1.0.0.
-
-Some rules are not implemented.
-
-This has been tested using OSSEC version 3.2.0, Red Hat 7 and NGINX version 1.10.1.
-
-__Usage__
-
-On the OSSEC client (on your DNS server), place cis_nginx_rcl.txt into your $OSSEC_HOME/etc/shared directory. Ensure your $OSSEC_HOME/etc/ossec.conf file is configured to use cis_nginx_rcl.txt.
-
-__Example ossec.conf__
-
-```
-  <rootcheck>
-    <system_audit>/var/ossec/etc/shared/cis_nginx_rcl.txt</system_audit>
-  </rootcheck>
-```
-
-__Reset the rootcheck database__
-
-On the OSSEC server, reset (clear) the rootcheck database with the following command:
-
-```
-$OSSEC_HOME/bin/rootcheck_control -u <id>
-```
-
-__Restart OSSEC client__
-
-On the OSSEC client, restart the client with the following command:
-
-```
-$OSSEC_HOME/bin/ossec-control restart
-```
-
-__Report__
-
-Once the rootcheck process has completed, view the report using the following command:
-
-```
-$OSSEC_HOME/rootcheck_control -i <id> -L
-```
