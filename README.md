@@ -10,6 +10,7 @@
   * [cis_nginx_rcl.txt](#cis_nginx_rcl.txt)
   * [cis_rhel7_linux_rcl.txt](#cis_rhel7_linux_rcl.txt)
   * [cis_rhel8_linux_rcl.txt](#cis_rhel8_linux_rcl.txt)
+  * [sec_squid_rcl.txt](#sec_squid_rcl.txt)
     
   
 ## <a name="nagios-discord.sh"></a>nagios-discord.sh
