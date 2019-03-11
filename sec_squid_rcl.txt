@@ -1,0 +1,199 @@
+# OSSEC SQUID Audit - (C) 2019 OSSEC Project
+#
+# Released under the same license as OSSEC.
+# More details at the LICENSE file included with OSSEC or online
+# at: https://github.com/ossec/ossec-hids/blob/master/LICENSE
+#
+# [Application name] [any or all] [reference]
+# type:<entry name>;
+#
+# Type can be:
+#             - f (for file or directory)
+#             - p (process running)
+#             - d (any file inside the directory)
+#
+# Additional values:
+# For the registry and for directories, use "->" to look for a specific entry and another
+# "->" to look for the value.
+# Also, use " -> r:^\. -> ..." to search all files in a directory
+# For files, use "->" to look for a specific value in the file.
+#
+# Values can be preceded by: =: (for equal) - default
+#                             r: (for ossec regexes)
+#                             >: (for strcmp greater)
+#                             <: (for strcmp  lower)
+# Multiple patterns can be specified by using " && " between them.
+# (All of them must match for it to return true).
+
+
+# Security Checks for SQUID
+
+# Vars
+$SQUID_BIN=/sbin;
+$SQUID_CONF=/etc/squid/squid.conf;
+
+[Testing against the Security Benchmark for SQUID v1.0.0] [any required] [SQUID Benchmark v1.0.0]
+d:$SQUID_BIN -> r:^squid$;
+
+
+###############################################
+# 1 Initial Setup
+###############################################
+
+# 1.1 Installation
+
+[{1.1.1} Installation - Ensure SQUID is installed (Scored)] [any] [SQUID Benchmark v1.0.0]
+d:$SQUID_BIN -> !r:^squid$;
+
+# 1.2 Configure Software Updates
+
+[{1.2.1} Configure Software Updates - Ensure package manager repositories are properly configured (Not Scored)] [any] [SQUID Benchmark v1.0.0]
+f:/etc/yum.repos.d/redhat.repo -> !r:enabled\.+1;
+
+
+###############################################
+# 2 Basic Configuration
+###############################################
+
+# 2.1 Account Security
+
+[{2.1.1} Account Security - Ensure that SQUID is run using a non-privileged, dedicated service account (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^cache_effective_user\s+squid;
+
+[{2.1.2} Account Security - Ensure that SQUID is run using a non-privileged, dedicated service group account (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^cache_effective_group\s+squid;
+
+[{2.1.3} Account Security - Ensure the SQUID service account is locked (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:/etc/shadow -> r:squid && !r::\p\p:;
+
+[{2.1.4} Account Security - Ensure the SQUID service account has an invalid shell (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:/etc/passwd -> r:squid && !r:/sbin/nologin;
+
+# 2.2 Network Configuration
+
+[{2.2.1} Network Configuration - Ensure SQUID only listens for network connections on authorized ports (Not Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^http_port\.+\p3128$;
+
+[{2.2.2} Network Configuration - Ensure DNS responses are confirmed (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> r:^ignore_unknown_nameservers\.+off$;
+
+[{2.2.3} Network Configuration - Ensure DNS requests for host names are fully defined (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> r:^dns_defnames\.+on$;
+
+[{2.2.4} Network Configuration - Detect broken HTTP/1.0 persistent connections and terminate after 10 seconds (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^detect_broken_pconn\.+on$;
+
+[{2.2.5} Network Configuration - Ensure detection of half-closed detections is disabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> r:^half_closed_clients\.+on$;
+
+[{2.2.6} Network Configuration - Ensure dns_retransmit_interval is 5 seconds or less (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^dns_retransmit_interval\.+2\.+seconds$;
+
+[{2.2.7} Network Configuration - Ensure dns_timeout is 5 minutes or less (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^dns_timeout\.+5\.+minutes$;
+
+[{2.2.8} Network Configuration - Ensure forward_timeout is 30 seconds or less (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^forward_timeout\.+30\.+seconds$;
+
+[{2.2.9} Network Configuration - Ensure connect_timeout is 30 seconds or less (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^connect_timeout\.+30\.+seconds$;
+
+[{2.2.10} Network Configuration - Ensure read_timeout is 30 seconds or less (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^read_timeout\.+30\.+seconds$;
+
+[{2.2.11} Network Configuration - Ensure request_timeout is 30 seconds or less (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_timeout\.+30\.+seconds$;
+
+[{2.2.12} Network Configuration - Ensure client_lifetime is 24 hours or less (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^client_lifetime\.+20\.+hours$;
+
+[{2.2.13} Network Configuration - Ensure request_header_max_size directive is set to defautl value (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_max_size\.+64\.+KB$;
+
+# 2.3 Information Disclosure
+
+[{2.3.1} Information Disclosure - Ensure forwarded_for directive is set to off (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^forwarded_for\.+off$;
+
+[{2.3.2} Information Disclosure - Ensure httpd_suppress_version_string directive is set to on (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^httpd_suppress_version_string\.+on$;
+
+[{2.3.3} Information Disclosure - Ensure via directive is set to off (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^via\.+off$;
+
+[{2.3.4} Information Disclosure - Deny Accept-Encoding request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_access\.+Accept-Encoding\.+deny\.+all$;
+
+[{2.3.5} Information Disclosure - Deny Accept-Language request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_access\.+Accept-Language\.+deny\.+all$;
+
+[{2.3.6} Information Disclosure - Deny Cache-Control request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_access\.+Cache-Control\.+deny\.+all$;
+
+[{2.3.7} Information Disclosure - Deny Referer request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_access\.+Referer\.+deny\.+all$;
+
+[{2.3.8} Information Disclosure - Deny Via request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_access\.+Via\.+deny\.+all$;
+
+[{2.3.9} Information Disclosure - Deny x-forward request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_access\.+x-forward\.+deny\.+all$;
+
+[{2.3.10} Information Disclosure - Deny X-Forwarded-For request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_access\.+X-Forwarded-For\.+deny\.+all$;
+
+[{2.3.11} Information Disclosure - Replace Accept-Encoding request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_replace\.+Accept-Encoding;
+
+[{2.3.12} Information Disclosure - Replace Accept-Language request header (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^request_header_replace\.+Accept-Language;
+
+# 2.4 Proxy Access
+
+[{2.4.1} Proxy Access - Allow access only via ACL (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^http_access\.+allow;
+f:$SQUID_CONF -> !r:^http_access\.+deny\.+all$;
+
+[{2.4.2} Proxy Access - Disable access to IDENT lookups (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^ident_lookup_access\.+deny\.+all$;
+
+[{2.4.3} Proxy Access - Ensure HTCP is disabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^htcp_port\.+0;
+
+[{2.4.4} Proxy Access - Ensure HTCP access is disabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^htcp_access\.+deny\.+all;
+
+[{2.4.5} Proxy Access - Ensure ICP is disabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^icp_port\.+0;
+
+[{2.4.6} Proxy Access - Ensure ICP access is disabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^icp_access\.+deny\.+all;
+
+[{2.4.7} Proxy Access - Ensure SNMP is disabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^snmp_port\.+0;
+
+[{2.4.8} Proxy Access - Ensure SNMP access is disabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^snmp_access\.+deny\.+all;
+
+[{2.4.9} Proxy Access - Ensure cache access is disabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^acl\.+all\.+src\.+0.0.0.0/0.0.0.0$;
+f:$SQUID_CONF -> !r:^cache\.+deny\.+all$;
+
+
+###############################################
+# 3 Logging
+###############################################
+
+[{3.1} Logging - Ensure detailed logging is enabled (Not Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^logformat\.+combined;
+
+[{3.2} Logging - Ensure access logging is enabled (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> !r:^access_log\.+combined;
+
+[{3.3} Logging - Ensure query terms are stripped from logs (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:$SQUID_CONF -> r:^strip_query_terms\.+off$;
+
+[{3.4} Logging - Ensure log files are rotated (Scored)] [any] [SQUID Benchmark v1.0.0]
+f:!/etc/logrotate.d/squid;
+f:/etc/logrotate.d/squid -> !r:weekly;
+f:/etc/logrotate.d/squid -> !r:rotate\s+13;
