@@ -1,4 +1,4 @@
-# OSSEC Linux Audit - (C) 2018 OSSEC Project
+# OSSEC Linux Audit - (C) 2019 OSSEC Project
 #
 # Released under the same license as OSSEC.
 # More details at the LICENSE file included with OSSEC or online
@@ -36,6 +36,7 @@ $rc_dirs=/etc/rc.d/rc2.d,/etc/rc.d/rc3.d,/etc/rc.d/rc4.d,/etc/rc.d/rc5.d;
 [Testing Red Hat Enterprise Linux 8 Custom Benchmark] [any required] [RHEL 8 Custom]
 f:/etc/redhat-release -> r:^Red Hat Enterprise Linux release 8;
 f:/etc/redhat-release -> r:^CentOS && r:release 8;
+
 
 ##########################################
 # 1.1 Filesystem Configuration
@@ -170,8 +171,8 @@ p:rhnsd;
 f:/boot/grub2/user.cfg -> !r:^GRUB2_PASSWORD;
 
 [{1.4.3} Secure Boot Settings - Ensure authentication required for single user mode (Scored)] [any] [RHEL 8 Custom]
-f:/usr/lib/systemd/system/emergency.service -> !r:/usr/sbin/sulogin;
-f:/usr/lib/systemd/system/rescue.service -> !r:/usr/sbin/sulogin;
+f:/usr/lib/systemd/system/emergency.service -> !r:systemd-sulogin-shell\.+emergency;
+f:/usr/lib/systemd/system/rescue.service -> !r:systemd-sulogin-shell\.+rescue;
 
 
 ###############################################
@@ -317,7 +318,6 @@ f:/etc/sysconfig/ntpd -> !r:OPTIONS="-u ntp:ntp;
 [{2.2.1.3} Special Purpose Services - Ensure chrony is configured (Scored)] [any] [RHEL 8 Custom]
 f:/etc/chrony.conf -> !r:^server;
 f:/etc/chrony.conf -> !r:^pool;
-f:/etc/sysconfig/chronyd -> !r:^OPTIONS\=\"\-u chrony\";
 
 [{2.2.2} Special Purpose Services - Ensure X Window System is not installed (Scored)] [any] [RHEL 8 Custom]
 p:gdm-x-session;
