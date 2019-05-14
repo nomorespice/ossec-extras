@@ -557,7 +557,7 @@ f:/etc/audit/auditd.conf -> !r:^max_log_file_action = keep_logs;
 f:/etc/systemd/system/multi-user.target.wants/auditd.service -> !r:Exec;
 
 [{4.1.3} Logging and Auditing - Ensure auditing for processes that start prior to auditd is enabled (Scored)] [any] [RHEL 8 Custom]
-f:/boot/grub2/grub.cfg -> !r:audit=1;
+f:/proc/cmdline -> !r:audit=1;
 
 [{4.1.4} Logging and Auditing - Ensure events that modify date and time information are collected (Scored)] [any] [RHEL 8 Custom]
 f:/etc/audit/audit.rules -> !r:time-change;
