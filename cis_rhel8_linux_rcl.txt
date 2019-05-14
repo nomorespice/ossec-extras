@@ -735,8 +735,8 @@ f:/etc/ssh/sshd_config -> !r:^# && r:PermitUserEnvironment\.+yes;
 f:/etc/ssh/sshd_config -> r:^Ciphers\s*$;
 
 [{5.2.12} SSH Server Configuration - Ensure SSH Idle Timeout Interval is configured (Scored)] [any] [RHEL 8 Custom]
-f:/etc/ssh/sshd_config -> !r:^# && r:ClientAliveInterval && !r:300\s*$;
-f:/etc/ssh/sshd_config -> !r:^# && r:ClientAliveCountMax && !r:0\s*$;
+f:/etc/ssh/sshd_config -> !r:^# && !r:ClientAliveInterval 300;
+f:/etc/ssh/sshd_config -> !r:^# && !r:ClientAliveCountMax 0;
 
 [{5.2.13} SSH Server Configuration - Ensure SSH LoginGraceTime is set to one minute or less (Scored)] [any] [RHEL 8 Custom]
 f:/etc/ssh/sshd_config -> !r:^# && r:LoginGraceTime && !r:60\s*$;
