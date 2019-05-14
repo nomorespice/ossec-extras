@@ -563,10 +563,10 @@ f:/proc/cmdline -> !r:audit=1;
 f:/etc/audit/audit.rules -> !r:time-change;
 
 [{4.1.5} Logging and Auditing - Ensure events that modify user/group information are collected (Scored)] [any] [RHEL 8 Custom]
-f:/etc/audit/audit.rules -> !r:identity;
+f:/etc/audit/audit.rules -> !r:audit_rules_usergroup_modification;
 
 [{4.1.6} Logging and Auditing - Ensure events that modify the system's network environment are collected (Scored)] [any] [RHEL 8 Custom]
-f:/etc/audit/audit.rules -> !r:system-locale;
+f:/etc/audit/audit.rules -> !r:audit_rules_networkconfig_modification;
 
 [{4.1.7} Logging and Auditing - Ensure events that modify the system's Mandatory Access Controls are collected (Scored)] [any] [RHEL 8 Custom]
 f:/etc/audit/audit.rules -> !r:MAC-policy;
@@ -587,16 +587,17 @@ f:/etc/audit/audit.rules -> !r:access;
 # TODO
 
 [{4.1.13} Logging and Auditing - Ensure successful file system mounts are collected (Scored)] [any] [RHEL 8 Custom]
-f:/etc/audit/audit.rules -> !r:mounts;
+f:/etc/audit/audit.rules -> !r:export;
 
 [{4.1.14} Logging and Auditing - Ensure file deletion events by users are collected (Scored)] [any] [RHEL 8 Custom]
 f:/etc/audit/audit.rules -> !r:delete;
 
 [{4.1.15} Logging and Auditing - Ensure changes to system administration scope (sudoers) is collected (Scored)] [any] [RHEL 8 Custom]
-f:/etc/audit/audit.rules -> !r:scope;
+f:/etc/audit/audit.rules -> !r:sudoers && !r:actions;
+f:/etc/audit/audit.rules -> !r:sudoers.d && !r:actions;
 
 [{4.1.16} Logging and Auditing - Ensure system administrator actions (sudolog) are collected (Scored)] [any] [RHEL 8 Custom]
-f:/etc/audit/audit.rules -> !r:actions;
+f:/etc/audit/audit.rules -> !r:sudo.log && !r:actions;
 
 [{4.1.17} Logging and Auditing - Ensure kernel module loading and unloading is collected (Scored)] [any] [RHEL 8 Custom]
 f:/etc/audit/audit.rules -> !r:modules;
