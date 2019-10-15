@@ -39,8 +39,10 @@ f:/etc/redhat-release -> r:^CentOS && r:release 8;
 
 
 ##########################################
-# 1.1 Filesystem Configuration
+# 1 Initial Setup
 ##########################################
+
+# 1.1 Filesystem Configuration
 
 # 1.1.1 Disable unused filesystems
 
@@ -122,10 +124,7 @@ f:/etc/systemd/system/multi-user.target.wants/autofs.service -> !r:Exec;
 [{1.1.23} Filesystem Configuration - Disable USB Storage (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/etc/modprobe.d/usb-storage.conf -> !r:^install\.+usb-storage\.+/bin/true;
 
-
-##########################################
 # 1.2 Configure Software Updates
-##########################################
 
 [{1.2.1} Configure Software Updates - Ensure Red Hat Subscription Manager connection is configured (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 d:/etc/pki/entitlement -> !^*$;
@@ -143,10 +142,7 @@ d:/etc/yum.repos.d -> r:^\. -> r:^gpgcheck\D+0$;
 [{1.2.5} Configure Software Updates - Ensure package manager repositories are configured (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 d:/etc/yum.repos.d -> !^redhat.repo$;
 
-
-###############################################
 # 1.3 Configure sudo
-###############################################
 
 [{1.3.1} Configure sudo - Ensure sudo is installed (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 d:/usr/bin -> !^sudo$;
@@ -159,10 +155,7 @@ f:/etc/sudoers -> !r:^Defaults\.+use_pty;
 f:/etc/sudoers -> !r:^Defaults\.+logfile;
 d:/var/log -> !^sudo.log$;
 
-
-###############################################
 # 1.4 Filesystem Integrity Checking
-###############################################
 
 [{1.4.1} Filesystem Integrity Checking - Ensure Ensure AIDE is installed (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 d:/usr/sbin -> !^aide$;
@@ -171,10 +164,7 @@ d:/etc -> !^aide.conf$;
 [{1.4.2} Filesystem Integrity Checking - Ensure filesystem integrity is regularly checked (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/var/spool/cron/root -> !r:aide;
 
-
-###############################################
 # 1.5 Secure Boot Settings
-###############################################
 
 [{1.5.1} Secure Boot Settings - Ensure permissions on bootloader config are configured (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 # TODO
@@ -186,10 +176,7 @@ f:/boot/grub2/user.cfg -> !r:^GRUB2_PASSWORD;
 f:/usr/lib/systemd/system/emergency.service -> !r:systemd-sulogin-shell\.+emergency;
 f:/usr/lib/systemd/system/rescue.service -> !r:systemd-sulogin-shell\.+rescue;
 
-
-###############################################
 # 1.6  Additional Process Hardening
-###############################################
 
 [{1.6.1} Additional Process Hardening - Ensure core dumps are restricted (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/etc/security/limits.conf -> !r:hard\.+core\.+0;
@@ -197,10 +184,7 @@ f:/etc/security/limits.conf -> !r:hard\.+core\.+0;
 [{1.6.2} Additional Process Hardening - Ensure address space layout randomization (ASLR) is enabled (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/proc/sys/kernel/randomize_va_space -> !r:^2$;
 
-
-###############################################
 # 1.7 Mandatory Access Control
-###############################################
 
 # 1.7.1 Configure SELinux
 
@@ -228,10 +212,7 @@ f:/usr/share/dbus-1/services/sealert.service -> r:Exec=/usr/bin/sealert;
 d:$rc_dirs -> ^S\d\dmctrans$;
 f:/usr/lib/systemd/system/mcstransd.service -> r:ExecStart=/usr/sbin/mcstransd;
 
-
-###############################################
 # 1.8 Warning Banners
-###############################################
 
 # 1.8.1 Command Line Warning Banners
 
@@ -284,10 +265,7 @@ f:/etc/crypto-policies/config -> !r:^FIPS|^FUTURE;
 [{2.1.1} Services - Ensure xinetd is not installed (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/usr/lib/systemd/system/xinetd.service -> r:Exec;
 
-
-###############################################
 # 2.2 Special Purpose Services
-###############################################
 
 # 2.2.1 Time Synchronization
 
@@ -350,10 +328,7 @@ f:/usr/lib/systemd/system/ypserv.service -> r:Exec;
 [{2.2.18} Special Purpose Services - Ensure mail transfer agent is configured for local-only mode (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/etc/postfix/main.cf -> !r:^inet_interfaces = localhost$;
 
-
-###############################################
 # 2.3 Service Clients
-###############################################
 
 [{2.3.1} Service Clients - Ensure NIS Client is not installed (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/usr/lib/systemd/system/ypbind.service -> r:Exec;
@@ -412,29 +387,23 @@ f:/proc/sys/net/ipv4/conf/default/rp_filter -> 0;
 f:/proc/sys/net/ipv4/tcp_syncookies -> 0;
 
 [{3.2.9} Network Configuration - Ensure IPv6 router advertisements are not accepted (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/proc/sys/net/ipv6/conf/all/accept_ra -> 0;
+f:/proc/sys/net/ipv6/conf/all/accept_ra -> 1;
 
-
-###############################################
 # 3.3 Uncommon Network Protocols
-###############################################
 
 [{3.3.1} Uncommon Network Protocols - Ensure DCCP is disabled (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+dccp\.+/bin/true;
+f:/etc/modprobe.d/dccp.conf -> !r:^install\.+dccp\.+/bin/true;
 
 [{3.3.2} Uncommon Network Protocols - Ensure SCTP is disabled (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+sctp\.+/bin/true;
+f:/etc/modprobe.d/sctp.conf -> !r:^install\.+sctp\.+/bin/true;
 
 [{3.3.3} Uncommon Network Protocols - Ensure RDS is disabled (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+rds\.+/bin/true;
+f:/etc/modprobe.d/rds.conf -> !r:^install\.+rds\.+/bin/true;
 
 [{3.3.4} Uncommon Network Protocols - Ensure TIPC is disabled (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+tipc\.+/bin/true;
+f:/etc/modprobe.d/tipc.conf -> !r:^install\.+tipc\.+/bin/true;
 
-
-###############################################
 # 3.4 Firewall Configuration
-###############################################
 
 # 3.4.1 Ensure Firewall software is installed
 
@@ -463,7 +432,7 @@ f:/etc/systemd/system/multi-user.target.wants/nftables.service -> r:Exec;
 # 3.4.3 Configure nftables
 
 [{3.4.3.1} Firewall Configuration - Ensure iptables are flushed (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/etc/sysconfig/iptables -> r:filter;
+f:/etc/sysconfig/iptables -> !r:filter;
 
 [{3.4.3.2} Firewall Configuration - Ensure a table exists (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/etc/sysconfig/nftables -> !r:^table;
@@ -515,8 +484,8 @@ f:/etc/sysconfig/ip6tables -> !r:OUTPUT DROP;
 f:/etc/sysconfig/ip6tables -> !r:FORWARD DROP;
 
 [{3.4.4.2.2} Firewall Configuration - Ensure IPv6 loopback traffic is configured (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/etc/sysconfig/ip6tables -> !r:INPUT -i lo -j ACCEPT;
-f:/etc/sysconfig/ip6tables -> !r:OUTPUT -o lo -j ACCEPT;
+f:/etc/sysconfig/ip6tables -> !r:INPUT\.+lo\.+ACCEPT;
+f:/etc/sysconfig/ip6tables -> !r:OUTPUT\.+lo\.+ACCEPT;
 
 [{3.4.4.2.3} Firewall Configuration - Ensure IPv6 outbound and established connections are configured (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/etc/sysconfig/ip6tables -> !r:INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT;
@@ -611,10 +580,7 @@ f:/etc/audit/audit.rules -> !r:sudo.log && !r:actions;
 [{4.1.17} Logging and Auditing - Ensure the audit configuration is immutable (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 # TODO
 
-
-###############################################
 # 4.2 Configure Logging
-###############################################
 
 # 4.2.1 Configure rsyslog
 
@@ -661,10 +627,7 @@ d:/etc -> !^logrotate.conf$;
 # 5 Access, Authentication and Authorization
 ###############################################
 
-
-###############################################
 # 5.1 Configure cron
-###############################################
 
 [{5.1.1} Configure cron - Ensure cron daemon is enabled (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/usr/lib/systemd/system/crond.service -> !r:Exec;
@@ -688,14 +651,10 @@ f:/usr/lib/systemd/system/crond.service -> !r:Exec;
 # TODO
 
 [{5.1.8} Configure cron - Ensure at/cron is restricted to authorized users (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-d:/etc -> ^cron.deny$;
 d:/etc -> !^cron.allow$;
 d:/etc -> !^at.allow$;
 
-
-###############################################
 # 5.2 SSH Server Configuration
-###############################################
 
 [{5.2.1} SSH Server Configuration - Ensure permissions on /etc/ssh/sshd_config are configured (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 # TODO
@@ -762,24 +721,18 @@ f:/etc/ssh/sshd_config -> !r:^MaxSessions\.+4;
 [{5.2.20} SSH Server Configuration - Ensure system-wide crypto policy is not over-ridden (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/etc/sysconfig/sshd -> r:^CRYPTO_POLICY;
 
-
-###############################################
 # 5.3 Configure authselect
-###############################################
 
 [{5.3.1} Configure authselect - Create custom authselect profile (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 #TODO
 
 [{5.3.2} Configure authselect - Select authselect profile (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/etc/authselect/authselect.conf -> !r:^custom-profile;
+f:/etc/authselect/authselect.conf -> !r:^custom;
 
 [{5.3.3} Configure authselect - Ensure authselect includes with-faillock (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/etc/authselect/authselect.conf -> !r:^with-faillock;
 
-
-###############################################
 # 5.4 Configure PAM
-###############################################
 
 [{5.4.1} Configure Pam - Ensure password creation requirements are configured (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 f:/etc/security/pwquality.conf -> !r:^minlen = 14\s*$;
@@ -800,10 +753,7 @@ f:/etc/pam.d/system-auth -> r:remember && !r:5\s*$;
 f:/etc/pam.d/password-auth -> !r:^password\.+sufficient\.+pam_unix.so\.+sha512;
 f:/etc/pam.d/system-auth -> !r:^password\.+sufficient\.+pam_unix.so\.+sha512;
 
-
-###############################################
 # 5.5 User Accounts and Environment
-###############################################
 
 # 5.5.1 Set Shadow Password Suite Parameters
 
@@ -910,10 +860,7 @@ f:/etc/group -> r:^wheel\s*$;
 [{6.1.14} System File Permissions - Audit SGID executables (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 # TODO
 
-
-###############################################
 # 6.2 User and Group Settings
-###############################################
 
 [{6.2.1} User and Group Settings - Ensure password fields are not empty (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 # TODO
