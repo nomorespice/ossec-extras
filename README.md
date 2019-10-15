@@ -16,7 +16,7 @@
 ## <a name="nagios-discord.sh"></a>nagios-discord.sh
 
 nagios-discord.sh is part of the OSSEC active response functionality.
-This has been tested using RHEL 7 and OSSEC version 2.9.3.
+This has been tested using RHEL 7 and OSSEC version 3.2.0.
 
 __Usage__
 
@@ -76,7 +76,7 @@ define service{
 ## <a name="ossec-discord.sh"></a>ossec-discord.sh
 
 ossec-discord.sh is part of the OSSEC active response functionality.
-This has been tested using Ubuntu 18.04 and OSSEC version 2.9.3.
+This has been tested using Ubuntu 18.04 and OSSEC version 3.2.0.
 
 __Usage__
 
@@ -104,7 +104,7 @@ __Example ossec.conf__
 ## <a name="ossec-nagios.sh"></a>ossec-nagios.sh
 
 ossec-nagios.sh is part of the OSSEC active response functionality.
-This has been tested using RHEL 7 and OSSEC version 2.9.3.
+This has been tested using RHEL 7 and OSSEC version 3.2.0.
 
 __Usage__
 
@@ -134,7 +134,7 @@ cis_bind_dns_rcl.txt is an optional part of the OSSEC system audit rootcheck fun
 
 Some rules are not implemented.
 
-This has been tested using OSSEC version 2.9.3, Red Hat 7 and BIND version 9.12.3-P1.
+This has been tested using OSSEC version 3.2.0, Red Hat 7 and BIND version 9.12.3-P1.
 
 __Usage__
 
@@ -329,7 +329,7 @@ cis_rhel7_linux_rcl.txt is part of the OSSEC system audit rootcheck functionalit
 
 Some rules are not implemented.
 
-This has been tested using OSSEC version 2.9.3.
+This has been tested using OSSEC version 3.2.0.
 
 __Usage__
 
@@ -396,11 +396,11 @@ System Audit: System Audit: {1.6.1.2} Mandatory Access Control - Ensure the SELi
 ```
 ## <a name="cis_rhel8_linux_rcl.txt"></a>cis_rhel8_linux_rcl.txt
 
-cis_rhel8_linux_rcl.txt is part of the OSSEC system audit rootcheck functionality. This file WILL be updated for the latest version of the CIS RedHat Enterprise Linux 8 Benchmark.
+cis_rhel8_linux_rcl.txt is part of the OSSEC system audit rootcheck functionality. This file has been updated for the latest version of the CIS RedHat Enterprise Linux 8 Benchmark: v1.0.0 - Draft
 
 Some rules are not implemented.
 
-This has been tested using OSSEC version 2.9.3.
+This has been tested using OSSEC version 3.2.0.
 
 __Usage__
 
