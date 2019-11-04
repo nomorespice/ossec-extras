@@ -422,9 +422,10 @@ f:/etc/systemd/system/basic.target.wants/iptables.service -> r:Exec;
 f:/etc/systemd/system/multi-user.target.wants/nftables.service -> r:Exec;
 
 [{3.4.2.4} Firewall Configuration - Ensure default zone is set (Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
-f:/etc/systemd/system/multi-user.target.wants/nftables.service -> r:Exec;
+#TODO
 
 [{3.4.2.5} Firewall Configuration - Ensure network interfaces are assigned to appropriate zone (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
+#TODO
 
 [{3.4.2.6} Firewall Configuration - Ensure unnecessary services and ports are not accepted (Not Scored)] [any] [CIS RHEL 8 Benchmark v1.0.0]
 #TODO
