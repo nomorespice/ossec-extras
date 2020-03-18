@@ -1,4 +1,4 @@
-# OSSEC BIND DNS Audit - (C) 2019 OSSEC Project
+# OSSEC BIND DNS Audit - (C) 2020 OSSEC Project
 #
 # Released under the same license as OSSEC.
 # More details at the LICENSE file included with OSSEC or online
@@ -27,7 +27,7 @@
 
 
 # CIS Checks for BIND DNS
-# Based on CIS Benchmark for ISC BIND DNS Server 9.9 v3.0.1
+# Based on CIS Benchmark for ISC BIND DNS Server 9.11 v3.0.1
 
 # Vars
 $NAMED_CONF=/etc/named.conf;
@@ -35,7 +35,7 @@ $NAMED_DIR=/sbin,/usr/local/sbin;
 $NAMED_KEY=/etc/rndc.key,/etc/dhcp-update.key;
 $NAMED_SVC=/usr/lib/systemd/system/named.service;
 
-[Testing against the CIS Benchmark ISC BIND DNS Server 9.9 v3.0.1] [any required] [CIS BIND DNS Benchmark v3.0.1]
+[Testing against the CIS Benchmark ISC BIND DNS Server 9.11 v3.0.1] [any required] [CIS BIND DNS Benchmark v3.0.1]
 d:$NAMED_DIR -> r:^named$;
 
 ###############################################
@@ -102,13 +102,13 @@ f:$NAMED_SVC -> !r:-t;
 f:$NAMED_CONF -> !r:blackhole;
 
 [{3.2} Restricting Queries - Restrict Recursive Queries (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
-f:$NAMED_CONF -> !r:allow-recursion;
+f:$NAMED_CONF -> !r:allow-recursion|recursion no;
 
 [{3.3} Restricting Queries - Restrict Query Origins (Not Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
 f:$NAMED_CONF -> !r:allow-query;
 
 [{3.4} Restricting Queries - Restrict Queries of the Cache (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
-f:$NAMED_CONF -> !r:allow-query-cache;
+f:$NAMED_CONF -> !r:allow-query-cache|recursion no;
 
 ###############################################
 # 4 Transaction Signatures - TSIG
@@ -138,10 +138,10 @@ f:$NAMED_CONF -> r:secret;
 f:$NAMED_CONF -> !r:allow-transfer\.+none|allow-transfer\.+key;
 
 [{5.2} Authenticate Zone Transfers and Updates - Securely Authenticate Dynamic Updates (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
-f:$NAMED_CONF -> !r:allow-update\.+local|allow-update\.+key;
+f:$NAMED_CONF -> !r:allow-transfer|allow-update;
 
 [{5.3} Authenticate Zone Transfers and Updates - Securely Authenticate Update Forwarding (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
-f:$NAMED_CONF -> !r:allow-update-forwarding\.+none|allow-update-forwarding\.+key;
+f:$NAMED_CONF -> !r:allow-update-forwarding\.+key;
 
 ###############################################
 # 6 Information Leakage
@@ -151,7 +151,7 @@ f:$NAMED_CONF -> !r:allow-update-forwarding\.+none|allow-update-forwarding\.+key
 f:$NAMED_CONF -> !r:version none;
 
 [{6.2} Information Leakage - Hide Nameserver ID (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
-f:$NAMED_CONF -> !r:server-id none;
+f:$NAMED_CONF -> r:server-id;
 
 ###############################################
 # 7 Secure Network Communications
@@ -162,8 +162,8 @@ f:$NAMED_CONF -> r:query-source;
 f:$NAMED_CONF -> r:query-source-v6;
 
 [{7.2} Secure network Communications - Enable DNSSEC Validation (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
-f:$NAMED_CONF -> !r:dnssec-enable yes;
-f:$NAMED_CONF -> !r:dnssec-validation yes;
+f:$NAMED_CONF -> r:dnssec-enable;
+f:$NAMED_CONF -> r:dnssec-validation;
 
 [{7.2} Secure network Communications - Disable the dnssec-accept-expired Option (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
 f:$NAMED_CONF -> r:dnssec-accept-expired;
@@ -173,7 +173,7 @@ f:$NAMED_CONF -> r:dnssec-accept-expired;
 ###############################################
 
 [{8.1} Operations - Apply Applicable Updates (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
-# TBA
+# TBD
 
 [{8.2} Operations - Configure a Logging File Channel (Scored)] [any] [CIS BIND DNS Benchmark v3.0.1]
 f:$NAMED_CONF -> !r:channel;
