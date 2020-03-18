@@ -1,4 +1,4 @@
-# OSSEC Apache HTTPD Audit - (C) 2019 OSSEC Project
+# OSSEC Apache HTTPD Audit - (C) 2020 OSSEC Project
 #
 # More details at the LICENSE file included with OSSEC or online
 # at: https://github.com/nomorespice/ossec-extras/blob/master/LICENSE
@@ -63,7 +63,7 @@ d:$HTTPD_BIN -> !r:^httpd$;
 ###############################################
 
 [{2.1} Minimize Apache Modules - Enable Only Necessary Authentication and Authorization Modules (Not Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
-d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+auth;
+d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+authn;
 d:$HTTPD_MOD -> .conf$ -> r:ldap;
 
 [{2.2} Minimize Apache Modules - Enable the Log Config Module (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
@@ -92,8 +92,8 @@ d:$HTTPD_MOD -> .conf$ -> r:^LoadModule\.+info_module;
 ###############################################
 
 [{3.1} Principles, Permissions, and Ownership - Run the Apache Web Server as a non-root user (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
-f:$HTTPD_CONF -> !r:^User\.+apache$;
-f:$HTTPD_CONF -> !r:^Group\.+apache$;
+f:$HTTPD_CONF -> !r:^User\.+apache;
+f:$HTTPD_CONF -> !r:^Group\.+apache;
 
 [{3.2} Principles, Permissions, and Ownership - Give the Apache User Account an Invalid Shell (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
 f:/etc/passwd -> r:apache && !r:/sbin/nologin;
@@ -207,7 +207,7 @@ f:$HTTPD_CONF -> !r:^RewriteCond\.+REQUEST_URI\.+error;
 f:$HTTPD_CONF -> !r:^RewriteRule\.+\p.\p;
 
 [{5.13} Minimize Features, Content and Options - Restrict Listen Directive (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
-f:$HTTPD_CONF -> !r:Listen\.+\p80$;
+f:$HTTPD_SSL -> !r:Listen\.+\d\d;
 
 [{5.14} Minimize Features, Content and Options - Restrict Browser Frame Options (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
 f:$HTTPD_CONF -> !r:Header\.+always\.+append\.+X-Frame-Options\.+SAMEORIGIN;
@@ -224,8 +224,8 @@ f:$HTTPD_CONF -> !r:^ErrorLog;
 f:$HTTPD_CONF -> !r:ErrorLog\.+\psyslog\p;
 
 [{6.3} Operations - Logging, Monitoring and Maintenance - Configure the Access Log (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
-f:$HTTPD_CONF -> !r:LogFormat\.+combined$;
-f:$HTTPD_CONF -> !r:CustomLog\.+combined$;
+f:$HTTPD_CONF -> !r:LogFormat\.+combined;
+f:$HTTPD_CONF -> !r:CustomLog\.+combined;
 
 [{6.4} Operations - Logging, Monitoring and Maintenance - Log Storage and Rotation (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
 f:!/etc/logrotate.d/httpd;
@@ -259,7 +259,7 @@ f:$HTTPD_SSL -> !r:^SSLEngine\.+On$;
 # TBD
 
 [{7.4} SSL/TLS Configuration - Disable the SSL v3.0 Protocol (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
-f:$HTTPD_SSL -> !r:^SSLProtocol\.+TLSv1.1\.+TLSv1.2$;
+f:$HTTPD_SSL -> !r:^SSLProtocol\.+-ALL\.+TLSv1.2$;
 
 [{7.5} SSL/TLS Configuration - Restrict Weak SSL/TLS Ciphers (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
 f:$HTTPD_SSL -> !r:^SSLHonorCipherOrder\.+On$;
@@ -282,7 +282,7 @@ f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\p3DES;
 f:$HTTPD_SSL -> !r:SSLCipherSuite\.+\pIDEA;
 
 [{7.9} SSL/TLS Configuration - Disable the TLS v1.0 Protocol (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
-f:$HTTPD_SSL -> !r:^SSLProtocol\.+TLSv1.1\.+TLSv1.2$;
+f:$HTTPD_SSL -> !r:^SSLProtocol\.-ALL\.+TLSv1.2$;
 
 [{7.10} SSL/TLS Configuration - Enable OCSP Stapling (Scored)] [any] [CIS Apache HTTP Server 2.4 Benchmark v1.4.0]
 f:$HTTPD_SSL -> !r:^SSLUseStapling\.+On;
