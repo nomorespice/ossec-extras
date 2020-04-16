@@ -3,6 +3,7 @@
 
   * [nagios-discord.sh](#nagios-discord.sh)
   * [ossec-discord.sh](#ossec-discord.sh)
+  * [ossec-nagios-teams-service.sh](#ossec-nagios-teams-service.sh)
   * [ossec-nagios.sh](#ossec-nagios.sh)
   * [cis_bind_dns_rcl.txt](#cis_bind_dns_rcl.txt)
   * [cis_debian_linux_rcl.txt](#cis_debian_linux_rcl.txt)
@@ -101,6 +102,66 @@ __Example ossec.conf__
     <level>7</level>
   </active-response>
 ```
+## <a name="ossec-nagios-teams-service.sh"></a>ossec-nagios-teams-service.sh
+
+ossec-nagios-teams-service.sh is part of the OSSEC active response functionality. This will send OSSEC alerts via Nagios to a Microsoft Teams channel via the incoming webhook connector. This has been tested using RHEL 8 and OSSEC version 3.6.0.
+
+__Usage__
+
+On the OSSEC server, place ossec-nagios-teams-service.sh into your /usr/local/bin. Ensure this file is also executable. 
+
+Next, configure Nagios to use this script for alerting:
+
+__Example (nagios-object).conf__
+
+```
+define command {
+        command_name     notify-ossec-teams
+        command_line     /usr/local/bin/ossec-nagios-teams-service.sh "$HOSTNAME$" "$SERVICEDESC$" "$SERVICESTATEID$" "$SERVICEOUTPUT$"
+	}
+
+define contact {
+        contact_name                    ossec-teams
+        alias                           Ossec-Teams
+        service_notification_period     work
+        service_notification_options    w,u,c,r
+        service_notification_commands   notify-ossec-teams
+        }
+
+define contactgroup{
+        contactgroup_name       ossec-teams
+        alias                   OSSEC Teams
+        members                 ossec-teams
+        }
+
+define service {
+        name                            service-passive
+        check_period                    24x7
+        max_check_attempts              1
+        check_interval                  10
+        retry_interval                  2
+        contact_groups                  ossec-teams
+        flap_detection_enabled          0
+        notification_options            w,u,c
+        notification_interval           720
+        notification_period             work
+        active_checks_enabled           0
+        passive_checks_enabled          1
+        parallelize_check               1
+        notifications_enabled           1
+        event_handler_enabled           1
+        register                        0
+        is_volatile                     1
+        check_command                   check_dummy_unix!0
+	}
+
+define service{
+        use                             service-passive
+        host_name                       nagios-host
+        service_description             OSSEC
+        }
+```
+
 ## <a name="ossec-nagios.sh"></a>ossec-nagios.sh
 
 ossec-nagios.sh is part of the OSSEC active response functionality.
