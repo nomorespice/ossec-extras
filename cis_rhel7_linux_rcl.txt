@@ -51,36 +51,28 @@ f:/etc/redhat-release -> r:^OpenVZ && r:release 7;
 # 1.1.1 Disable unused filesystems
 
 [{1.1.1.1} Filesystem Configuration - Ensure mounting of cramfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+cramfs\.+/bin/true;
+f:/etc/modprobe.d/cramfs.conf -> !r:^install\.+cramfs\.+/bin/true;
 
 [{1.1.1.2} Filesystem Configuration - Ensure mounting of freevxfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+freevxfs\.+/bin/true;
+f:/etc/modprobe.d/freevxfs.conf -> !r:^install\.+freevxfs\.+/bin/true;
 
 [{1.1.1.3} Filesystem Configuration - Ensure mounting of jffs2 filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+jffs2\.+/bin/true;
+f:/etc/modprobe.d/jffs2.conf -> !r:^install\.+jffs2\.+/bin/true;
 
 [{1.1.1.4} Filesystem Configuration - Ensure mounting of hfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+hfs\.+/bin/true;
+f:/etc/modprobe.d/hfs.conf -> !r:^install\.+hfs\.+/bin/true;
 
 [{1.1.1.5} Filesystem Configuration - Ensure mounting of hfsplus filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+hfsplus\.+/bin/true;
+f:/etc/modprobe.d/hfsplus.conf -> !r:^install\.+hfsplus\.+/bin/true;
 
 [{1.1.1.6} Filesystem Configuration - Ensure mounting of squashfs filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+squashfs\.+/bin/true;
+f:/etc/modprobe.d/squashfs.conf -> !r:^install\.+squashfs\.+/bin/true;
 
 [{1.1.1.7} Filesystem Configuration - Ensure mounting of udf filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+udf\.+/bin/true;
+f:/etc/modprobe.d/udf.conf -> !r:^install\.+udf\.+/bin/true;
 
 [{1.1.1.8} Filesystem Configuration - Ensure mounting of vfat filesystems is disabled (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+vfat\.+/bin/true;
+f:/etc/modprobe.d/vfat.conf -> !r:^install\.+vfat\.+/bin/true;
 
 [{1.1.2} Filesystem Configuration - Ensure separate partition exists for /tmp (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/fstab -> !r:/tmp;
@@ -320,8 +312,8 @@ f:/etc/systemd/system/multi-user.target.wants/xinetd.service;
 # 2.2.1 Time Synchronization
 
 [{2.2.1.1} Special Purpose Services - Ensure time synchronization is in use (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/systemd/system/multi-user.target.wants/ntpd.service;
-p:!ntpd;
+f:!/etc/systemd/system/multi-user.target.wants/chronyd.service;
+p:!chronyd;
 
 [{2.2.1.2} Special Purpose Services - Ensure ntp is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 f:/etc/ntp.conf -> !r:^restrict -4 default nomodify notrap nopeer noquery;
@@ -330,9 +322,7 @@ f:/etc/ntp.conf -> !r:^server;
 f:/etc/sysconfig/ntpd -> !r:OPTIONS="-u ntp:ntp;
 
 [{2.2.1.3} Special Purpose Services - Ensure chrony is configured (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:/etc/chrony.conf -> !r:^server;
-f:/etc/chrony.conf -> !r:^pool;
-f:/etc/sysconfig/chronyd -> !r:^OPTIONS\=\"\-u chrony\";
+f:/etc/chrony.conf -> !r:^server|^pool;
 
 [{2.2.2} Special Purpose Services - Ensure X Window System is not installed (Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
 p:gdm-x-session;
@@ -519,20 +509,16 @@ d:/etc -> !^hosts.deny$;
 ###############################################
 
 [{3.5.1} Uncommon Network Protocols - Ensure DCCP is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+dccp\.+/bin/true;
+f:/etc/modprobe.d/dccp.conf -> !r:^install\.+dccp\.+/bin/true;
 
 [{3.5.2} Uncommon Network Protocols - Ensure SCTP is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+sctp\.+/bin/true;
+f:/etc/modprobe.d/sctp.conf -> !r:^install\.+sctp\.+/bin/true;
 
 [{3.5.3} Uncommon Network Protocols - Ensure RDS is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+rds\.+/bin/true;
+f:/etc/modprobe.d/rds.conf -> !r:^install\.+rds\.+/bin/true;
 
 [{3.5.4} Uncommon Network Protocols - Ensure TIPC is disabled (Not Scored)] [any] [CIS RHEL 7 Benchmark v2.2.0]
-f:!/etc/modprobe.d/CIS.conf;
-f:/etc/modprobe.d/CIS.conf -> !r:^install\.+tipc\.+/bin/true;
+f:/etc/modprobe.d/tipc.conf -> !r:^install\.+tipc\.+/bin/true;
 
 
 ###############################################
